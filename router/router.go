@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"go-scoresheet/master/controllers"
 	"go-scoresheet/master/router"
 )
 
@@ -20,6 +21,6 @@ func InitializeRoutesMain() *fiber.App {
 
 func SetupRoutes(app *fiber.App) {
 	api := app.Group("/api")
-	//api.Post("/users/login", middleware.Login)
+	api.Post("/users/login", controllers.LoginUser)
 	routerMaster.InitializeRoutesMaster(api)
 }

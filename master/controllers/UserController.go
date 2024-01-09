@@ -3,7 +3,10 @@ package controllers
 import (
 	"github.com/gofiber/fiber/v2"
 	"go-scoresheet/database"
+	"go-scoresheet/master/helpers"
 	"go-scoresheet/master/models"
+	"go-scoresheet/middleware"
+	"net/http"
 )
 
 func CreateUser(c *fiber.Ctx) error {
@@ -123,4 +126,85 @@ func DeleteUserById(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"message": "Berhasil Menghapus Data",
 	})
+}
+
+func LoginUser(c *fiber.Ctx) error {
+	db := database.GetDB()
+	user := models.User{}
+
+	err := c.BodyParser(&user)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"status":  http.StatusText(http.StatusBadRequest),
+			"message": err.Error(),
+		})
+	}
+
+	password := user.Password
+
+	err = db.Where("username = ?", user.Username).Take(&user).Error
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"status":  http.StatusText(http.StatusBadRequest),
+			"message": "invalid username or password",
+		})
+	}
+
+	if !helpers.PasswordValid(user.Password, password) {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"status":  http.StatusText(http.StatusBadRequest),
+			"message": "invalid username or password",
+		})
+	}
+
+	// Check if the user is already active
+	var session middleware.Session
+	if db != nil {
+		db.First(&session, "user_id = ?", user.ID)
+	}
+
+	if session.UserID != 0 {
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"message": "User sedang aktif",
+		})
+	}
+
+	token, err := helpers.GenerateToken(user.ID, user.Email)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"status":  http.StatusText(http.StatusInternalServerError),
+			"message": err.Error(),
+		})
+	}
+
+	// Save the session after the token is successfully generated
+	err = saveSession(c, int(user.ID), token)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"status":  http.StatusText(http.StatusInternalServerError),
+			"message": "Failed to create session",
+		})
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"token": token,
+	})
+}
+
+func saveSession(c *fiber.Ctx, userId int, token string) error {
+	db := database.GetDB()
+	sessionData := middleware.Session{
+		UserID: userId,
+		Token:  token,
+	}
+	if db != nil {
+		result := db.Create(&sessionData)
+
+		if result.Error != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Failed to create session",
+			})
+		}
+	}
+	return nil
 }
