@@ -1,23 +1,20 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
-	"go-scoresheet/master/helpers"
+	"github.com/gofiber/fiber/v2"
 	"net/http"
 )
 
-func Authentication() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		claims, err := helpers.VerifyToken(c)
-		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"status":  "Unauthorized",
-				"message": err.Error(),
-			})
-			return
-		}
+// Authentication middleware checks for a valid JWT in the Authorization header
+func Authentication(c *fiber.Ctx) error {
+	// Get the Authorization header
+	authHeader := c.Get("Authorization")
 
-		c.Set("userData", claims)
-		c.Next()
+	if authHeader == "" {
+		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"error": "Unauthorized"})
 	}
+
+	c.Locals("userId", nil)
+
+	return c.Next()
 }

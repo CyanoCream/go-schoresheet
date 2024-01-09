@@ -3,9 +3,12 @@ package routerMaster
 import (
 	"github.com/gofiber/fiber/v2"
 	"go-scoresheet/master/controllers"
+	"go-scoresheet/middleware"
 )
 
 func InitializeRoutesMaster(api fiber.Router) {
+	api.Use(middleware.Authentication)
+	api.Delete("/logout", controllers.DeleteSessionByToken)
 	//Master User
 	api.Post("/users", controllers.CreateUser)
 	api.Get("/users", controllers.GetAllUsers)

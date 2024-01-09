@@ -208,3 +208,37 @@ func saveSession(c *fiber.Ctx, userId int, token string) error {
 	}
 	return nil
 }
+func DeleteSessionByToken(c *fiber.Ctx) error {
+	// Membuka koneksi ke database
+	db := database.GetDB()
+
+	// Ambil token dari request JSON
+	var req struct {
+		Token string `json:"token"`
+	}
+
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Failed to parse request",
+		})
+	}
+
+	// Mencari sesi berdasarkan token
+	var session middleware.Session
+	if err := db.Unscoped().Where("token = ?", req.Token).First(&session).Error; err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "Session not found",
+		})
+	}
+
+	// Menghapus sesi dari database
+	if err := db.Unscoped().Delete(&session).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to delete session",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Session deleted successfully",
+	})
+}
