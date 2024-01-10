@@ -6,6 +6,16 @@ import (
 	"go-scoresheet/master/models"
 )
 
+// CreateRole godoc
+// @Tags Roles
+// @Summary Create Roles
+// @Description Create New Role
+// @ID createRole
+// @Accept json
+// @Produce json
+// @Param requestBody body models.Role true "User credentials in JSON format"
+// @Success 201 {object} models.Role
+// @Router /api/Role [post]
 func CreateRole(c *fiber.Ctx) error {
 	Role := new(models.Role)
 
@@ -27,7 +37,15 @@ func CreateRole(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(Role)
 }
 
-// Get all users
+// GetAllRoles godoc
+// @Tags Roles
+// @Summary Get all Roles
+// @Description Get details of all roles
+// @ID get-all-Roles
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} models.Role
+// @Router /api/role [get]
 func GetAllRoles(c *fiber.Ctx) error {
 	var Role []models.Role
 
@@ -46,6 +64,16 @@ func GetAllRoles(c *fiber.Ctx) error {
 	})
 }
 
+// @Tags Roles
+// @Summary Get user by ID
+// @Description Get a user by ID
+// @ID get-role-by-id
+// @Accept  json
+// @Produce  json
+// @Param id path string true "Role ID"
+// @Success 200 {object} map[string]interface{} "success"
+// @Failure 404 {object} map[string]interface{} "Role tidak ditemukan"
+// @Router /api/role/{id} [get]
 func GetRoleById(c *fiber.Ctx) error {
 	db := database.GetDB()
 
@@ -65,6 +93,16 @@ func GetRoleById(c *fiber.Ctx) error {
 	})
 }
 
+// @Tags Roles
+// @Summary Get role by ID
+// @Description Get a role by ID
+// @ID get-role-by-id
+// @Accept  json
+// @Produce  json
+// @Param id path string true "Role ID"
+// @Success 200 {object} map[string]interface{} "success"
+// @Failure 404 {object} map[string]interface{} "Role tidak ditemukan"
+// @Router /api/role/{id} [get]
 func UpdateRoleById(c *fiber.Ctx) error {
 	db := database.GetDB()
 
@@ -102,6 +140,18 @@ func UpdateRoleById(c *fiber.Ctx) error {
 		"data":    Role,
 	})
 }
+
+// @Tags Roles
+// @Summary Delete role by ID
+// @Description Delete a role by ID
+// @ID delete-role-by-id
+// @Accept  json
+// @Produce  json
+// @Param id path string true "Role ID"
+// @Success 200 {object} map[string]interface{} "Berhasil Menghapus Data"
+// @Failure 404 {object} map[string]interface{} "Role tidak ditemukan"
+// @Failure 500 {object} map[string]interface{} "Gagal menghapus data role"
+// @Router /api/roles/{id} [delete]
 func DeleteRoleById(c *fiber.Ctx) error {
 	db := database.GetDB()
 

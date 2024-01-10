@@ -22,6 +22,67 @@ definitions:
     - password
     - username
     type: object
+  models.Permission:
+    properties:
+      action:
+        type: string
+      code:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        type: string
+      guard_name:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      module:
+        type: string
+      name:
+        type: string
+      tag:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.PermissionRole:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      permission_code:
+        type: string
+      role_code:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.Role:
+    properties:
+      code:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      guard:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      tag:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   models.User:
     properties:
       createdAt:
@@ -44,6 +105,29 @@ definitions:
 info:
   contact: {}
 paths:
+  /api/Role:
+    post:
+      consumes:
+      - application/json
+      description: Create New Role
+      operationId: createRole
+      parameters:
+      - description: User credentials in JSON format
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.Role'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Role'
+      summary: Create Roles
+      tags:
+      - Roles
   /api/login:
     post:
       consumes:
@@ -86,6 +170,289 @@ paths:
       summary: Logout user
       tags:
       - Auth
+  /api/permission:
+    get:
+      consumes:
+      - application/json
+      description: Get All Permission
+      operationId: GetAllPermission
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Permission'
+      summary: Get All Permission
+      tags:
+      - Permissions
+    post:
+      consumes:
+      - application/json
+      description: Create New Permission
+      operationId: CreatePermission
+      parameters:
+      - description: Permissioan credentials in JSON format
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.Permission'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Permission'
+      summary: Create Permission
+      tags:
+      - Permissions
+  /api/permission-role:
+    get:
+      consumes:
+      - application/json
+      description: Get All Permission Role
+      operationId: GetAllPermissionRole
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.PermissionRole'
+      summary: Get All Permission Role
+      tags:
+      - Permission Roles
+    post:
+      consumes:
+      - application/json
+      description: Create New Permission Role
+      operationId: CreatePermissionRole
+      parameters:
+      - description: Permissioan Role credentials in JSON format
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.PermissionRole'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.PermissionRole'
+      summary: Create Permission Role
+      tags:
+      - Permission Roles
+  /api/permission-role/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Permission Role by ID
+      operationId: DeletePermissionRoleById
+      parameters:
+      - description: PermissionRole ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.PermissionRole'
+      summary: Delete Permission Role by ID
+      tags:
+      - Permission Roles
+    get:
+      consumes:
+      - application/json
+      description: Get Permission Role by ID
+      operationId: GetPermissionRoleById
+      parameters:
+      - description: PermissionRole ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.PermissionRole'
+      summary: Get Permission Role by ID
+      tags:
+      - Permission Roles
+    post:
+      consumes:
+      - application/json
+      description: Update Permission Role by ID
+      operationId: UpdatePermissionRoleById
+      parameters:
+      - description: PermissionRole ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.PermissionRole'
+      summary: Update Permission Role by ID
+      tags:
+      - Permission Roles
+  /api/permission/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Permission by ID
+      operationId: DeletePermissionById
+      parameters:
+      - description: Permission ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Permission'
+      summary: Delete Permission by ID
+      tags:
+      - Permissions
+    get:
+      consumes:
+      - application/json
+      description: Get Permission by ID
+      operationId: GetPermissionById
+      parameters:
+      - description: Permission ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Permission'
+      summary: Get Permission by ID
+      tags:
+      - Permissions
+    post:
+      consumes:
+      - application/json
+      description: Update Permission by ID
+      operationId: UpdatePermissionById
+      parameters:
+      - description: Permission ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Permission'
+      summary: Update Permission by ID
+      tags:
+      - Permissions
+  /api/role:
+    get:
+      consumes:
+      - application/json
+      description: Get details of all roles
+      operationId: get-all-Roles
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Role'
+            type: array
+      summary: Get all Roles
+      tags:
+      - Roles
+  /api/role/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a role by ID
+      operationId: get-role-by-id
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Role tidak ditemukan
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get role by ID
+      tags:
+      - Roles
+  /api/roles/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a role by ID
+      operationId: delete-role-by-id
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil Menghapus Data
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Role tidak ditemukan
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Gagal menghapus data role
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete role by ID
+      tags:
+      - Roles
   /api/users:
     get:
       consumes:
@@ -101,6 +468,9 @@ paths:
             items:
               $ref: '#/definitions/models.User'
             type: array
+      security:
+      - BasicAuth: []
+      - Bearer: []
       summary: Get all users
       tags:
       - Users
@@ -108,7 +478,7 @@ paths:
       consumes:
       - application/json
       description: Create New User
-      operationId: create
+      operationId: createUser
       parameters:
       - description: User credentials in JSON format
         in: body
@@ -124,6 +494,34 @@ paths:
           schema:
             $ref: '#/definitions/models.User'
       summary: Create User
+      tags:
+      - Users
+  /api/users/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a user by ID
+      operationId: get-user-by-id
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: User tidak ditemukan
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get user by ID
       tags:
       - Users
   /api/users/delete/{id}:
@@ -157,34 +555,6 @@ paths:
             additionalProperties: true
             type: object
       summary: Delete user by ID
-      tags:
-      - Users
-  /api/users/get/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Get a user by ID
-      operationId: get-user-by-id
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: success
-          schema:
-            additionalProperties: true
-            type: object
-        "404":
-          description: User tidak ditemukan
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Get user by ID
       tags:
       - Users
   /api/users/update/{id}:

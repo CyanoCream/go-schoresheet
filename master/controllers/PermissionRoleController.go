@@ -6,6 +6,16 @@ import (
 	"go-scoresheet/master/models"
 )
 
+// CreatePermissionRole godoc
+// @Tags Permission Roles
+// @Summary Create Permission Role
+// @Description Create New Permission Role
+// @ID CreatePermissionRole
+// @Accept json
+// @Produce json
+// @Param requestBody body models.PermissionRole true "Permissioan Role credentials in JSON format"
+// @Success 201 {object} models.PermissionRole
+// @Router /api/permission-role [post]
 func CreatePermissionRole(c *fiber.Ctx) error {
 	PermissionRole := new(models.PermissionRole)
 
@@ -27,7 +37,15 @@ func CreatePermissionRole(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(PermissionRole)
 }
 
-// Get all users
+// GetAllPermissionRoles godoc
+// @Tags Permission Roles
+// @Summary Get All Permission Role
+// @Description Get All Permission Role
+// @ID GetAllPermissionRole
+// @Accept json
+// @Produce json
+// @Success 201 {object} models.PermissionRole
+// @Router /api/permission-role [get]
 func GetAllPermissionRoles(c *fiber.Ctx) error {
 	var PermissionRole []models.PermissionRole
 
@@ -46,6 +64,16 @@ func GetAllPermissionRoles(c *fiber.Ctx) error {
 	})
 }
 
+// GetPermissionRoleById godoc
+// @Tags Permission Roles
+// @Summary Get Permission Role by ID
+// @Description Get Permission Role by ID
+// @ID GetPermissionRoleById
+// @Accept json
+// @Produce json
+// @Param id path string true "PermissionRole ID"
+// @Success 201 {object} models.PermissionRole
+// @Router /api/permission-role/{id} [get]
 func GetPermissionRoleById(c *fiber.Ctx) error {
 	db := database.GetDB()
 
@@ -65,6 +93,16 @@ func GetPermissionRoleById(c *fiber.Ctx) error {
 	})
 }
 
+// UpdatePermissionRoleById godoc
+// @Tags Permission Roles
+// @Summary Update Permission Role by ID
+// @Description Update Permission Role by ID
+// @ID UpdatePermissionRoleById
+// @Accept json
+// @Produce json
+// @Param id path string true "PermissionRole ID"
+// @Success 201 {object} models.PermissionRole
+// @Router /api/permission-role/{id} [post]
 func UpdatePermissionRoleById(c *fiber.Ctx) error {
 	db := database.GetDB()
 
@@ -100,6 +138,17 @@ func UpdatePermissionRoleById(c *fiber.Ctx) error {
 		"data":    PermissionRole,
 	})
 }
+
+// DeletePermissionRoleById godoc
+// @Tags Permission Roles
+// @Summary Delete Permission Role by ID
+// @Description Delete Permission Role by ID
+// @ID DeletePermissionRoleById
+// @Accept json
+// @Produce json
+// @Param id path string true "PermissionRole ID"
+// @Success 201 {object} models.PermissionRole
+// @Router /api/permission-role/{id} [delete]
 func DeletePermissionRoleById(c *fiber.Ctx) error {
 	db := database.GetDB()
 

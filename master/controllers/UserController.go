@@ -13,7 +13,7 @@ import (
 // @Tags Users
 // @Summary Create User
 // @Description Create New User
-// @ID create
+// @ID createUser
 // @Accept json
 // @Produce json
 // @Param requestBody body models.User true "User credentials in JSON format"
@@ -41,6 +41,7 @@ func CreateUser(c *fiber.Ctx) error {
 }
 
 // GetAllUsers godoc
+// @Security BasicAuth
 // @Tags Users
 // @Summary Get all users
 // @Description Get details of all users
@@ -76,7 +77,7 @@ func GetAllUsers(c *fiber.Ctx) error {
 // @Param id path string true "User ID"
 // @Success 200 {object} map[string]interface{} "success"
 // @Failure 404 {object} map[string]interface{} "User tidak ditemukan"
-// @Router /api/users/get/{id} [get]
+// @Router /api/users/{id} [get]
 func GetUserById(c *fiber.Ctx) error {
 	db := database.GetDB()
 

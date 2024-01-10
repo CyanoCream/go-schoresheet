@@ -35,7 +35,7 @@ func InitializeRoutesMaster(api fiber.Router) {
 	api.Post("/permission-role", controllers.CreatePermissionRole)
 	api.Get("/permission-role", controllers.GetAllPermissionRoles)
 	api.Get("/permission-role/:id", controllers.GetPermissionRoleById)
-	api.Post("/permission-role/:id", controllers.UpdateRoleById)
-	api.Delete("/permission-role/:id", controllers.DeleteRoleById)
+	api.Post("/permission-role/:id", controllers.UpdatePermissionRoleById)
+	api.Delete("/permission-role/:id", controllers.DeletePermissionRoleById)
 
 }
