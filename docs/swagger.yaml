@@ -118,6 +118,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.Role'
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -125,6 +130,9 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/models.Role'
+      security:
+      - ApiKeyAuth: []
+      - Bearer: []
       summary: Create Roles
       tags:
       - Roles
@@ -141,6 +149,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/middleware.LoginField'
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -148,6 +161,9 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/middleware.JWT'
+      security:
+      - ApiKeyAuth: []
+      - Bearer: []
       summary: Login user
       tags:
       - Auth
@@ -164,9 +180,17 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/middleware.JWT'
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}
+      security:
+      - ApiKeyAuth: []
+      - Bearer: []
       summary: Logout user
       tags:
       - Auth
@@ -176,6 +200,12 @@ paths:
       - application/json
       description: Get All Permission
       operationId: GetAllPermission
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -183,6 +213,9 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/models.Permission'
+      security:
+      - ApiKeyAuth: []
+      - Bearer: []
       summary: Get All Permission
       tags:
       - Permissions
@@ -198,6 +231,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.Permission'
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -205,6 +243,9 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/models.Permission'
+      security:
+      - ApiKeyAuth: []
+      - Bearer: []
       summary: Create Permission
       tags:
       - Permissions
@@ -214,6 +255,12 @@ paths:
       - application/json
       description: Get All Permission Role
       operationId: GetAllPermissionRole
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -221,6 +268,9 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/models.PermissionRole'
+      security:
+      - ApiKeyAuth: []
+      - Bearer: []
       summary: Get All Permission Role
       tags:
       - Permission Roles
@@ -236,6 +286,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.PermissionRole'
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -243,6 +298,9 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/models.PermissionRole'
+      security:
+      - ApiKeyAuth: []
+      - Bearer: []
       summary: Create Permission Role
       tags:
       - Permission Roles
@@ -258,6 +316,11 @@ paths:
         name: id
         required: true
         type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -265,6 +328,9 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/models.PermissionRole'
+      security:
+      - ApiKeyAuth: []
+      - Bearer: []
       summary: Delete Permission Role by ID
       tags:
       - Permission Roles
@@ -279,6 +345,11 @@ paths:
         name: id
         required: true
         type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -286,6 +357,9 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/models.PermissionRole'
+      security:
+      - ApiKeyAuth: []
+      - Bearer: []
       summary: Get Permission Role by ID
       tags:
       - Permission Roles
@@ -300,6 +374,11 @@ paths:
         name: id
         required: true
         type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -307,6 +386,9 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/models.PermissionRole'
+      security:
+      - ApiKeyAuth: []
+      - Bearer: []
       summary: Update Permission Role by ID
       tags:
       - Permission Roles
@@ -322,6 +404,11 @@ paths:
         name: id
         required: true
         type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -329,6 +416,9 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/models.Permission'
+      security:
+      - ApiKeyAuth: []
+      - Bearer: []
       summary: Delete Permission by ID
       tags:
       - Permissions
@@ -343,6 +433,11 @@ paths:
         name: id
         required: true
         type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -350,6 +445,9 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/models.Permission'
+      security:
+      - ApiKeyAuth: []
+      - Bearer: []
       summary: Get Permission by ID
       tags:
       - Permissions
@@ -364,6 +462,11 @@ paths:
         name: id
         required: true
         type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -371,6 +474,9 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/models.Permission'
+      security:
+      - ApiKeyAuth: []
+      - Bearer: []
       summary: Update Permission by ID
       tags:
       - Permissions
@@ -380,6 +486,12 @@ paths:
       - application/json
       description: Get details of all roles
       operationId: get-all-Roles
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -389,6 +501,9 @@ paths:
             items:
               $ref: '#/definitions/models.Role'
             type: array
+      security:
+      - ApiKeyAuth: []
+      - Bearer: []
       summary: Get all Roles
       tags:
       - Roles
@@ -404,6 +519,11 @@ paths:
         name: id
         required: true
         type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -417,6 +537,9 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - ApiKeyAuth: []
+      - Bearer: []
       summary: Get role by ID
       tags:
       - Roles
@@ -430,6 +553,11 @@ paths:
       - description: Role ID
         in: path
         name: id
+        required: true
+        type: string
+      - description: Authorization
+        in: header
+        name: Authorization
         required: true
         type: string
       produces:
@@ -450,6 +578,9 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - ApiKeyAuth: []
+      - Bearer: []
       summary: Delete role by ID
       tags:
       - Roles
@@ -459,6 +590,12 @@ paths:
       - application/json
       description: Get details of all users
       operationId: get-all-users
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -469,7 +606,7 @@ paths:
               $ref: '#/definitions/models.User'
             type: array
       security:
-      - BasicAuth: []
+      - ApiKeyAuth: []
       - Bearer: []
       summary: Get all users
       tags:
@@ -508,6 +645,11 @@ paths:
         name: id
         required: true
         type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -521,6 +663,9 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - ApiKeyAuth: []
+      - Bearer: []
       summary: Get user by ID
       tags:
       - Users
@@ -534,6 +679,11 @@ paths:
       - description: User ID
         in: path
         name: id
+        required: true
+        type: string
+      - description: Authorization
+        in: header
+        name: Authorization
         required: true
         type: string
       produces:
@@ -554,6 +704,9 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - ApiKeyAuth: []
+      - Bearer: []
       summary: Delete user by ID
       tags:
       - Users
@@ -575,6 +728,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.User'
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -598,6 +756,9 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - ApiKeyAuth: []
+      - Bearer: []
       summary: Update user by ID
       tags:
       - Users

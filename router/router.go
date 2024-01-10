@@ -8,9 +8,9 @@ import (
 	"go-scoresheet/master/router"
 )
 
-// @title Fiber Example API
+// @title GO-Scoresheet
 // @version 1.0
-// @description This is a sample swagger for Fiber
+// @description Documentation API GO-Scoresheet
 // @termsOfService http://swagger.io/terms/
 // @contact.name API Support
 // @contact.email fiber@swagger.io
@@ -18,6 +18,9 @@ import (
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @host localhost:3000
 // @BasePath /
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 func InitializeRoutesMain() *fiber.App {
 	app := fiber.New()
 	app.Get("/swagger/*", swagger.HandlerDefault) // default

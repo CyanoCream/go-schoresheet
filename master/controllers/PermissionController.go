@@ -15,6 +15,9 @@ import (
 // @Produce json
 // @Param requestBody body models.Permission true "Permissioan credentials in JSON format"
 // @Success 201 {object} models.Permission
+// @Security ApiKeyAuth
+// @Security Bearer
+// @param Authorization header string true "Authorization"
 // @Router /api/permission [post]
 func CreatePermission(c *fiber.Ctx) error {
 	permission := new(models.Permission)
@@ -45,6 +48,9 @@ func CreatePermission(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Success 201 {object} models.Permission
+// @Security ApiKeyAuth
+// @Security Bearer
+// @param Authorization header string true "Authorization"
 // @Router /api/permission [get]
 func GetAllPermissions(c *fiber.Ctx) error {
 	var permissions []models.Permission
@@ -73,6 +79,9 @@ func GetAllPermissions(c *fiber.Ctx) error {
 // @Produce json
 // @Param id path string true "Permission ID"
 // @Success 201 {object} models.Permission
+// @Security ApiKeyAuth
+// @Security Bearer
+// @param Authorization header string true "Authorization"
 // @Router /api/permission/{id} [get]
 func GetPermissionById(c *fiber.Ctx) error {
 	db := database.GetDB()
@@ -102,6 +111,9 @@ func GetPermissionById(c *fiber.Ctx) error {
 // @Produce json
 // @Param id path string true "Permission ID"
 // @Success 201 {object} models.Permission
+// @Security ApiKeyAuth
+// @Security Bearer
+// @param Authorization header string true "Authorization"
 // @Router /api/permission/{id} [post]
 func UpdatePermissionById(c *fiber.Ctx) error {
 	db := database.GetDB()
@@ -154,6 +166,9 @@ func UpdatePermissionById(c *fiber.Ctx) error {
 // @Produce json
 // @Param id path string true "Permission ID"
 // @Success 201 {object} models.Permission
+// @Security ApiKeyAuth
+// @Security Bearer
+// @param Authorization header string true "Authorization"
 // @Router /api/permission/{id} [delete]
 func DeletePermissionById(c *fiber.Ctx) error {
 	db := database.GetDB()

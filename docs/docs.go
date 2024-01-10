@@ -17,6 +17,14 @@ const docTemplate = `{
     "paths": {
         "/api/Role": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Create New Role",
                 "consumes": [
                     "application/json"
@@ -38,6 +46,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.Role"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -52,6 +67,14 @@ const docTemplate = `{
         },
         "/api/login": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Logs in a user and returns an authentication token",
                 "consumes": [
                     "application/json"
@@ -73,6 +96,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/middleware.LoginField"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -87,6 +117,14 @@ const docTemplate = `{
         },
         "/api/logout": {
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Session Logout",
                 "consumes": [
                     "application/json"
@@ -108,6 +146,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/middleware.JWT"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -115,6 +160,14 @@ const docTemplate = `{
         },
         "/api/permission": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get All Permission",
                 "consumes": [
                     "application/json"
@@ -127,6 +180,15 @@ const docTemplate = `{
                 ],
                 "summary": "Get All Permission",
                 "operationId": "GetAllPermission",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "Created",
@@ -137,6 +199,14 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Create New Permission",
                 "consumes": [
                     "application/json"
@@ -158,6 +228,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.Permission"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -172,6 +249,14 @@ const docTemplate = `{
         },
         "/api/permission-role": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get All Permission Role",
                 "consumes": [
                     "application/json"
@@ -184,6 +269,15 @@ const docTemplate = `{
                 ],
                 "summary": "Get All Permission Role",
                 "operationId": "GetAllPermissionRole",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "Created",
@@ -194,6 +288,14 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Create New Permission Role",
                 "consumes": [
                     "application/json"
@@ -215,6 +317,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.PermissionRole"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -229,6 +338,14 @@ const docTemplate = `{
         },
         "/api/permission-role/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get Permission Role by ID",
                 "consumes": [
                     "application/json"
@@ -248,6 +365,13 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -260,6 +384,14 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update Permission Role by ID",
                 "consumes": [
                     "application/json"
@@ -279,6 +411,13 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -291,6 +430,14 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete Permission Role by ID",
                 "consumes": [
                     "application/json"
@@ -310,6 +457,13 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -324,6 +478,14 @@ const docTemplate = `{
         },
         "/api/permission/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get Permission by ID",
                 "consumes": [
                     "application/json"
@@ -343,6 +505,13 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -355,6 +524,14 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update Permission by ID",
                 "consumes": [
                     "application/json"
@@ -374,6 +551,13 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -386,6 +570,14 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete Permission by ID",
                 "consumes": [
                     "application/json"
@@ -405,6 +597,13 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -419,6 +618,14 @@ const docTemplate = `{
         },
         "/api/role": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get details of all roles",
                 "consumes": [
                     "application/json"
@@ -431,6 +638,15 @@ const docTemplate = `{
                 ],
                 "summary": "Get all Roles",
                 "operationId": "get-all-Roles",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -446,6 +662,14 @@ const docTemplate = `{
         },
         "/api/role/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get a role by ID",
                 "consumes": [
                     "application/json"
@@ -464,6 +688,13 @@ const docTemplate = `{
                         "description": "Role ID",
                         "name": "id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -487,6 +718,14 @@ const docTemplate = `{
         },
         "/api/roles/{id}": {
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete a role by ID",
                 "consumes": [
                     "application/json"
@@ -505,6 +744,13 @@ const docTemplate = `{
                         "description": "Role ID",
                         "name": "id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -537,7 +783,7 @@ const docTemplate = `{
             "get": {
                 "security": [
                     {
-                        "BasicAuth": []
+                        "ApiKeyAuth": []
                     },
                     {
                         "Bearer": []
@@ -555,6 +801,15 @@ const docTemplate = `{
                 ],
                 "summary": "Get all users",
                 "operationId": "get-all-users",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -603,6 +858,14 @@ const docTemplate = `{
         },
         "/api/users/delete/{id}": {
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete a user by ID",
                 "consumes": [
                     "application/json"
@@ -621,6 +884,13 @@ const docTemplate = `{
                         "description": "User ID",
                         "name": "id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -651,6 +921,14 @@ const docTemplate = `{
         },
         "/api/users/update/{id}": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update a user by ID",
                 "consumes": [
                     "application/json"
@@ -679,6 +957,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.User"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -715,6 +1000,14 @@ const docTemplate = `{
         },
         "/api/users/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get a user by ID",
                 "consumes": [
                     "application/json"
@@ -733,6 +1026,13 @@ const docTemplate = `{
                         "description": "User ID",
                         "name": "id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
