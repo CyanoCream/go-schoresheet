@@ -9,6 +9,16 @@ import (
 	"net/http"
 )
 
+// CreateUser godoc
+// @Tags Users
+// @Summary Create User
+// @Description Create New User
+// @ID create
+// @Accept json
+// @Produce json
+// @Param requestBody body models.User true "User credentials in JSON format"
+// @Success 201 {object} models.User
+// @Router /api/users [post]
 func CreateUser(c *fiber.Ctx) error {
 	user := new(models.User)
 
@@ -30,7 +40,15 @@ func CreateUser(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(user)
 }
 
-// Get all users
+// GetAllUsers godoc
+// @Tags Users
+// @Summary Get all users
+// @Description Get details of all users
+// @ID get-all-users
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} models.User
+// @Router /api/users [get]
 func GetAllUsers(c *fiber.Ctx) error {
 	var users []models.User
 
@@ -49,6 +67,16 @@ func GetAllUsers(c *fiber.Ctx) error {
 	})
 }
 
+// @Tags Users
+// @Summary Get user by ID
+// @Description Get a user by ID
+// @ID get-user-by-id
+// @Accept  json
+// @Produce  json
+// @Param id path string true "User ID"
+// @Success 200 {object} map[string]interface{} "success"
+// @Failure 404 {object} map[string]interface{} "User tidak ditemukan"
+// @Router /api/users/get/{id} [get]
 func GetUserById(c *fiber.Ctx) error {
 	db := database.GetDB()
 
@@ -68,6 +96,19 @@ func GetUserById(c *fiber.Ctx) error {
 	})
 }
 
+// @Tags Users
+// @Summary Update user by ID
+// @Description Update a user by ID
+// @ID update-user-by-id
+// @Accept  json
+// @Produce  json
+// @Param id path string true "User ID"
+// @Param user body models.User true "User"
+// @Success 200 {object} map[string]interface{} "Berhasil melakukan pembaruan"
+// @Failure 404 {object} map[string]interface{} "User tidak ditemukan"
+// @Failure 400 {object} map[string]interface{} "Invalid JSON"
+// @Failure 500 {object} map[string]interface{} "Gagal melakukan pembaruan"
+// @Router /api/users/update/{id} [post]
 func UpdateUserById(c *fiber.Ctx) error {
 	db := database.GetDB()
 
@@ -105,6 +146,18 @@ func UpdateUserById(c *fiber.Ctx) error {
 		"data":    user,
 	})
 }
+
+// @Tags Users
+// @Summary Delete user by ID
+// @Description Delete a user by ID
+// @ID delete-user-by-id
+// @Accept  json
+// @Produce  json
+// @Param id path string true "User ID"
+// @Success 200 {object} map[string]interface{} "Berhasil Menghapus Data"
+// @Failure 404 {object} map[string]interface{} "User tidak ditemukan"
+// @Failure 500 {object} map[string]interface{} "Gagal menghapus data pengguna"
+// @Router /api/users/delete/{id} [delete]
 func DeleteUserById(c *fiber.Ctx) error {
 	db := database.GetDB()
 
@@ -128,6 +181,15 @@ func DeleteUserById(c *fiber.Ctx) error {
 	})
 }
 
+// @Summary Login user
+// @Description Logs in a user and returns an authentication token
+// @ID loginUser
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param requestBody body middleware.LoginField true "User credentials in JSON format"
+// @Success 201 {object} middleware.JWT
+// @Router /api/login [post]
 func LoginUser(c *fiber.Ctx) error {
 	db := database.GetDB()
 	user := models.User{}
@@ -208,6 +270,15 @@ func saveSession(c *fiber.Ctx, userId int, token string) error {
 	}
 	return nil
 }
+
+// @Summary Logout user
+// @Description Session Logout
+// @ID logoutUser
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param requestBody body middleware.JWT true "User credentials in JSON format"
+// @Router /api/logout [DELETE]
 func DeleteSessionByToken(c *fiber.Ctx) error {
 	// Membuka koneksi ke database
 	db := database.GetDB()

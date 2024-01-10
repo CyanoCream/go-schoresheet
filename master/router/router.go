@@ -7,10 +7,11 @@ import (
 )
 
 func InitializeRoutesMaster(api fiber.Router) {
-	api.Use(middleware.Authentication)
-	api.Delete("/logout", controllers.DeleteSessionByToken)
-	//Master User
 	api.Post("/users", controllers.CreateUser)
+	api.Use(middleware.Authentication)
+
+	//Master User
+
 	api.Get("/users", controllers.GetAllUsers)
 	api.Get("/users/:id", controllers.GetUserById)
 	api.Post("/users/:id", controllers.UpdateUserById)
