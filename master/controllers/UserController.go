@@ -51,7 +51,6 @@ func CreateUser(c *fiber.Ctx) error {
 // @Router /api/users [get]
 // @Security ApiKeyAuth
 // @Security Bearer
-// @param Authorization header string true "Authorization"
 func GetAllUsers(c *fiber.Ctx) error {
 	var users []models.User
 
@@ -81,7 +80,6 @@ func GetAllUsers(c *fiber.Ctx) error {
 // @Failure 404 {object} map[string]interface{} "User tidak ditemukan"
 // @Security ApiKeyAuth
 // @Security Bearer
-// @param Authorization header string true "Authorization"
 // @Router /api/users/{id} [get]
 func GetUserById(c *fiber.Ctx) error {
 	db := database.GetDB()
@@ -116,7 +114,6 @@ func GetUserById(c *fiber.Ctx) error {
 // @Failure 500 {object} map[string]interface{} "Gagal melakukan pembaruan"
 // @Security ApiKeyAuth
 // @Security Bearer
-// @param Authorization header string true "Authorization"
 // @Router /api/users/update/{id} [post]
 func UpdateUserById(c *fiber.Ctx) error {
 	db := database.GetDB()
@@ -168,7 +165,6 @@ func UpdateUserById(c *fiber.Ctx) error {
 // @Failure 500 {object} map[string]interface{} "Gagal menghapus data pengguna"
 // @Security ApiKeyAuth
 // @Security Bearer
-// @param Authorization header string true "Authorization"
 // @Router /api/users/delete/{id} [delete]
 func DeleteUserById(c *fiber.Ctx) error {
 	db := database.GetDB()
@@ -199,11 +195,7 @@ func DeleteUserById(c *fiber.Ctx) error {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param requestBody body middleware.LoginField true "User credentials in JSON format"
 // @Success 201 {object} middleware.JWT
-// @Security ApiKeyAuth
-// @Security Bearer
-// @param Authorization header string true "Authorization"
 // @Router /api/login [post]
 func LoginUser(c *fiber.Ctx) error {
 	db := database.GetDB()
@@ -292,10 +284,6 @@ func saveSession(c *fiber.Ctx, userId int, token string) error {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param requestBody body middleware.JWT true "User credentials in JSON format"
-// @Security ApiKeyAuth
-// @Security Bearer
-// @param Authorization header string true "Authorization"
 // @Router /api/logout [DELETE]
 func DeleteSessionByToken(c *fiber.Ctx) error {
 	// Membuka koneksi ke database

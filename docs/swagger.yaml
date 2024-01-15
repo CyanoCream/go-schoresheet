@@ -12,16 +12,6 @@ definitions:
       token:
         type: string
     type: object
-  middleware.LoginField:
-    properties:
-      password:
-        type: string
-      username:
-        type: string
-    required:
-    - password
-    - username
-    type: object
   models.Permission:
     properties:
       action:
@@ -102,8 +92,12 @@ definitions:
       username:
         type: string
     type: object
+host: localhost:3000
 info:
   contact: {}
+  description: This is a sample server.
+  title: GO-Scoresheet
+  version: "2.0"
 paths:
   /api/Role:
     post:
@@ -142,18 +136,6 @@ paths:
       - application/json
       description: Logs in a user and returns an authentication token
       operationId: loginUser
-      parameters:
-      - description: User credentials in JSON format
-        in: body
-        name: requestBody
-        required: true
-        schema:
-          $ref: '#/definitions/middleware.LoginField'
-      - description: Authorization
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -161,9 +143,6 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/middleware.JWT'
-      security:
-      - ApiKeyAuth: []
-      - Bearer: []
       summary: Login user
       tags:
       - Auth
@@ -173,24 +152,9 @@ paths:
       - application/json
       description: Session Logout
       operationId: logoutUser
-      parameters:
-      - description: User credentials in JSON format
-        in: body
-        name: requestBody
-        required: true
-        schema:
-          $ref: '#/definitions/middleware.JWT'
-      - description: Authorization
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses: {}
-      security:
-      - ApiKeyAuth: []
-      - Bearer: []
       summary: Logout user
       tags:
       - Auth
@@ -200,12 +164,6 @@ paths:
       - application/json
       description: Get All Permission
       operationId: GetAllPermission
-      parameters:
-      - description: Authorization
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -231,11 +189,6 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.Permission'
-      - description: Authorization
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -255,12 +208,6 @@ paths:
       - application/json
       description: Get All Permission Role
       operationId: GetAllPermissionRole
-      parameters:
-      - description: Authorization
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -286,11 +233,6 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.PermissionRole'
-      - description: Authorization
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -314,11 +256,6 @@ paths:
       - description: PermissionRole ID
         in: path
         name: id
-        required: true
-        type: string
-      - description: Authorization
-        in: header
-        name: Authorization
         required: true
         type: string
       produces:
@@ -345,11 +282,6 @@ paths:
         name: id
         required: true
         type: string
-      - description: Authorization
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -372,11 +304,6 @@ paths:
       - description: PermissionRole ID
         in: path
         name: id
-        required: true
-        type: string
-      - description: Authorization
-        in: header
-        name: Authorization
         required: true
         type: string
       produces:
@@ -404,11 +331,6 @@ paths:
         name: id
         required: true
         type: string
-      - description: Authorization
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -431,11 +353,6 @@ paths:
       - description: Permission ID
         in: path
         name: id
-        required: true
-        type: string
-      - description: Authorization
-        in: header
-        name: Authorization
         required: true
         type: string
       produces:
@@ -462,11 +379,6 @@ paths:
         name: id
         required: true
         type: string
-      - description: Authorization
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -486,12 +398,6 @@ paths:
       - application/json
       description: Get details of all roles
       operationId: get-all-Roles
-      parameters:
-      - description: Authorization
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -517,11 +423,6 @@ paths:
       - description: Role ID
         in: path
         name: id
-        required: true
-        type: string
-      - description: Authorization
-        in: header
-        name: Authorization
         required: true
         type: string
       produces:
@@ -555,11 +456,6 @@ paths:
         name: id
         required: true
         type: string
-      - description: Authorization
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -590,12 +486,6 @@ paths:
       - application/json
       description: Get details of all users
       operationId: get-all-users
-      parameters:
-      - description: Authorization
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -645,11 +535,6 @@ paths:
         name: id
         required: true
         type: string
-      - description: Authorization
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -679,11 +564,6 @@ paths:
       - description: User ID
         in: path
         name: id
-        required: true
-        type: string
-      - description: Authorization
-        in: header
-        name: Authorization
         required: true
         type: string
       produces:
@@ -728,11 +608,6 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.User'
-      - description: Authorization
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -762,4 +637,9 @@ paths:
       summary: Update user by ID
       tags:
       - Users
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

@@ -17,7 +17,6 @@ import (
 // @Success 201 {object} models.Permission
 // @Security ApiKeyAuth
 // @Security Bearer
-// @param Authorization header string true "Authorization"
 // @Router /api/permission [post]
 func CreatePermission(c *fiber.Ctx) error {
 	permission := new(models.Permission)
@@ -50,7 +49,6 @@ func CreatePermission(c *fiber.Ctx) error {
 // @Success 201 {object} models.Permission
 // @Security ApiKeyAuth
 // @Security Bearer
-// @param Authorization header string true "Authorization"
 // @Router /api/permission [get]
 func GetAllPermissions(c *fiber.Ctx) error {
 	var permissions []models.Permission
@@ -81,7 +79,6 @@ func GetAllPermissions(c *fiber.Ctx) error {
 // @Success 201 {object} models.Permission
 // @Security ApiKeyAuth
 // @Security Bearer
-// @param Authorization header string true "Authorization"
 // @Router /api/permission/{id} [get]
 func GetPermissionById(c *fiber.Ctx) error {
 	db := database.GetDB()
@@ -113,7 +110,6 @@ func GetPermissionById(c *fiber.Ctx) error {
 // @Success 201 {object} models.Permission
 // @Security ApiKeyAuth
 // @Security Bearer
-// @param Authorization header string true "Authorization"
 // @Router /api/permission/{id} [post]
 func UpdatePermissionById(c *fiber.Ctx) error {
 	db := database.GetDB()
@@ -168,7 +164,6 @@ func UpdatePermissionById(c *fiber.Ctx) error {
 // @Success 201 {object} models.Permission
 // @Security ApiKeyAuth
 // @Security Bearer
-// @param Authorization header string true "Authorization"
 // @Router /api/permission/{id} [delete]
 func DeletePermissionById(c *fiber.Ctx) error {
 	db := database.GetDB()

@@ -50,7 +50,6 @@ func CreateRole(c *fiber.Ctx) error {
 // @Success 200 {array} models.Role
 // @Security ApiKeyAuth
 // @Security Bearer
-// @param Authorization header string true "Authorization"
 // @Router /api/role [get]
 func GetAllRoles(c *fiber.Ctx) error {
 	var Role []models.Role
@@ -81,7 +80,6 @@ func GetAllRoles(c *fiber.Ctx) error {
 // @Failure 404 {object} map[string]interface{} "Role tidak ditemukan"
 // @Security ApiKeyAuth
 // @Security Bearer
-// @param Authorization header string true "Authorization"
 // @Router /api/role/{id} [get]
 func GetRoleById(c *fiber.Ctx) error {
 	db := database.GetDB()
@@ -113,7 +111,6 @@ func GetRoleById(c *fiber.Ctx) error {
 // @Failure 404 {object} map[string]interface{} "Role tidak ditemukan"
 // @Security ApiKeyAuth
 // @Security Bearer
-// @param Authorization header string true "Authorization"
 // @Router /api/role/{id} [get]
 func UpdateRoleById(c *fiber.Ctx) error {
 	db := database.GetDB()
@@ -165,7 +162,6 @@ func UpdateRoleById(c *fiber.Ctx) error {
 // @Failure 500 {object} map[string]interface{} "Gagal menghapus data role"
 // @Security ApiKeyAuth
 // @Security Bearer
-// @param Authorization header string true "Authorization"
 // @Router /api/roles/{id} [delete]
 func DeleteRoleById(c *fiber.Ctx) error {
 	db := database.GetDB()

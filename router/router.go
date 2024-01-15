@@ -9,7 +9,7 @@ import (
 )
 
 // @title GO-Scoresheet
-// @version 1.0
+// @version 2.0
 // @description Documentation API GO-Scoresheet
 // @termsOfService http://swagger.io/terms/
 // @contact.name API Support
@@ -17,10 +17,6 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @host localhost:3000
-// @BasePath /
-// @securityDefinitions.apikey ApiKeyAuth
-// @in header
-// @name Authorization
 func InitializeRoutesMain() *fiber.App {
 	app := fiber.New()
 	app.Get("/swagger/*", swagger.HandlerDefault) // default
