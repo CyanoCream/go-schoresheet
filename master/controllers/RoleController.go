@@ -15,29 +15,35 @@ import (
 // @Produce json
 // @Param requestBody body models.Role true "User credentials in JSON format"
 // @Success 201 {object} models.Role
-// @Security ApiKeyAuth
 // @Security Bearer
-// @param Authorization header string true "Authorization"
-// @Router /api/Role [post]
+// @Router /api/role [post]
 func CreateRole(c *fiber.Ctx) error {
-	Role := new(models.Role)
+	Role := new(models.Role) // Pastikan ini adalah pointer ke struct yang benar
 
+	// Parse body ke struct Role
 	if err := c.BodyParser(Role); err != nil {
+		// Jika terjadi error, kirim response dengan status 400 dan pesan error
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "Invalid JSON",
+			"message": "Invalid JSON: " + err.Error(),
 		})
 	}
 
+	// Lanjutkan dengan proses penyimpanan ke database
 	db := database.GetDB()
 	result := db.Create(Role)
 
+	// Jika terjadi error saat menyimpan, kirim response dengan status 500
 	if result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Failed to create Role",
+			"message": "Failed to create role: " + result.Error.Error(),
 		})
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(Role)
+	// Jika berhasil, kirim response dengan status 201 dan data Role yang telah dibuat
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"message": "success",
+		"data":    Role,
+	})
 }
 
 // GetAllRoles godoc
@@ -48,7 +54,6 @@ func CreateRole(c *fiber.Ctx) error {
 // @Accept  json
 // @Produce  json
 // @Success 200 {array} models.Role
-// @Security ApiKeyAuth
 // @Security Bearer
 // @Router /api/role [get]
 func GetAllRoles(c *fiber.Ctx) error {
@@ -70,15 +75,14 @@ func GetAllRoles(c *fiber.Ctx) error {
 }
 
 // @Tags Roles
-// @Summary Get user by ID
-// @Description Get a user by ID
+// @Summary Get role by ID
+// @Description Get a role by ID
 // @ID get-role-by-id
 // @Accept  json
 // @Produce  json
 // @Param id path string true "Role ID"
 // @Success 200 {object} map[string]interface{} "success"
 // @Failure 404 {object} map[string]interface{} "Role tidak ditemukan"
-// @Security ApiKeyAuth
 // @Security Bearer
 // @Router /api/role/{id} [get]
 func GetRoleById(c *fiber.Ctx) error {
@@ -109,7 +113,6 @@ func GetRoleById(c *fiber.Ctx) error {
 // @Param id path string true "Role ID"
 // @Success 200 {object} map[string]interface{} "success"
 // @Failure 404 {object} map[string]interface{} "Role tidak ditemukan"
-// @Security ApiKeyAuth
 // @Security Bearer
 // @Router /api/role/{id} [get]
 func UpdateRoleById(c *fiber.Ctx) error {
@@ -160,7 +163,6 @@ func UpdateRoleById(c *fiber.Ctx) error {
 // @Success 200 {object} map[string]interface{} "Berhasil Menghapus Data"
 // @Failure 404 {object} map[string]interface{} "Role tidak ditemukan"
 // @Failure 500 {object} map[string]interface{} "Gagal menghapus data role"
-// @Security ApiKeyAuth
 // @Security Bearer
 // @Router /api/roles/{id} [delete]
 func DeleteRoleById(c *fiber.Ctx) error {

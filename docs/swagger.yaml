@@ -12,6 +12,16 @@ definitions:
       token:
         type: string
     type: object
+  middleware.LoginField:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
   models.Permission:
     properties:
       action:
@@ -92,50 +102,43 @@ definitions:
       username:
         type: string
     type: object
-host: localhost:3000
+  models.UserRole:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      role_code:
+        type: string
+      updatedAt:
+        type: string
+      user_id:
+        type: integer
+    required:
+    - role_code
+    - user_id
+    type: object
 info:
   contact: {}
   description: This is a sample server.
   title: GO-Scoresheet
   version: "2.0"
 paths:
-  /api/Role:
-    post:
-      consumes:
-      - application/json
-      description: Create New Role
-      operationId: createRole
-      parameters:
-      - description: User credentials in JSON format
-        in: body
-        name: requestBody
-        required: true
-        schema:
-          $ref: '#/definitions/models.Role'
-      - description: Authorization
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/models.Role'
-      security:
-      - ApiKeyAuth: []
-      - Bearer: []
-      summary: Create Roles
-      tags:
-      - Roles
   /api/login:
     post:
       consumes:
       - application/json
       description: Logs in a user and returns an authentication token
       operationId: loginUser
+      parameters:
+      - description: User credentials in JSON format
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/middleware.LoginField'
       produces:
       - application/json
       responses:
@@ -408,9 +411,32 @@ paths:
               $ref: '#/definitions/models.Role'
             type: array
       security:
-      - ApiKeyAuth: []
       - Bearer: []
       summary: Get all Roles
+      tags:
+      - Roles
+    post:
+      consumes:
+      - application/json
+      description: Create New Role
+      operationId: createRole
+      parameters:
+      - description: User credentials in JSON format
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.Role'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Role'
+      security:
+      - Bearer: []
+      summary: Create Roles
       tags:
       - Roles
   /api/role/{id}:
@@ -439,7 +465,6 @@ paths:
             additionalProperties: true
             type: object
       security:
-      - ApiKeyAuth: []
       - Bearer: []
       summary: Get role by ID
       tags:
@@ -475,11 +500,119 @@ paths:
             additionalProperties: true
             type: object
       security:
-      - ApiKeyAuth: []
       - Bearer: []
       summary: Delete role by ID
       tags:
       - Roles
+  /api/user-role:
+    get:
+      consumes:
+      - application/json
+      description: Get details of all user roles
+      operationId: get-all-UserRoles
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.UserRole'
+            type: array
+      security:
+      - Bearer: []
+      summary: Get all User Roles
+      tags:
+      - UserRoles
+    post:
+      consumes:
+      - application/json
+      description: Create New User Role
+      operationId: createUserRole
+      parameters:
+      - description: User credentials in JSON format
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserRole'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.UserRole'
+      security:
+      - Bearer: []
+      summary: Create User Roles
+      tags:
+      - UserRoles
+  /api/user-role/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a user role by ID
+      operationId: get-user-role-by-id
+      parameters:
+      - description: User Role ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: User Role tidak ditemukan
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - Bearer: []
+      summary: Get user role by ID
+      tags:
+      - UserRoles
+  /api/userroles/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a user role by ID
+      operationId: delete-user-role-by-id
+      parameters:
+      - description: User Role ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil Menghapus Data
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: User Role tidak ditemukan
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Gagal menghapus data user role
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - Bearer: []
+      summary: Delete user role by ID
+      tags:
+      - UserRoles
   /api/users:
     get:
       consumes:

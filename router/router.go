@@ -16,7 +16,6 @@ import (
 // @contact.email fiber@swagger.io
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-// @host localhost:3000
 func InitializeRoutesMain() *fiber.App {
 	app := fiber.New()
 	app.Get("/swagger/*", swagger.HandlerDefault) // default

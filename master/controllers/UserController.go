@@ -196,6 +196,7 @@ func DeleteUserById(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Success 201 {object} middleware.JWT
+// @Param requestBody body middleware.LoginField true "User credentials in JSON format"
 // @Router /api/login [post]
 func LoginUser(c *fiber.Ctx) error {
 	db := database.GetDB()
@@ -237,8 +238,14 @@ func LoginUser(c *fiber.Ctx) error {
 			"message": "User sedang aktif",
 		})
 	}
+	userRoles := GetUserRolesByID(user.ID)
 
-	token, err := helpers.GenerateToken(user.ID, user.Email)
+	var roleCodes []string
+	for _, userRole := range userRoles {
+		roleCodes = append(roleCodes, userRole.RoleCode)
+	}
+
+	token, err := helpers.GenerateToken(user.ID, user.Email, roleCodes)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  http.StatusText(http.StatusInternalServerError),
@@ -247,7 +254,7 @@ func LoginUser(c *fiber.Ctx) error {
 	}
 
 	// Save the session after the token is successfully generated
-	err = saveSession(c, int(user.ID), token)
+	//err = saveSession(c, int(user.ID), token)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  http.StatusText(http.StatusInternalServerError),
