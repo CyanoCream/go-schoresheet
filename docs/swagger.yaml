@@ -83,6 +83,95 @@ definitions:
       updatedAt:
         type: string
     type: object
+  models.Tbl_club:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      hometown:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      name:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.Tbl_match:
+    properties:
+      club_id1:
+        type: integer
+      club_id2:
+        type: integer
+      createdAt:
+        type: string
+      date_match:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      level:
+        type: integer
+      turnament_code:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  models.Tbl_player:
+    properties:
+      club_id:
+        type: integer
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      name:
+        type: string
+      position:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.Tbl_score:
+    properties:
+      club_id:
+        type: integer
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      match_id:
+        type: integer
+      score:
+        type: integer
+      status:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.Turnament:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      name:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   models.User:
     properties:
       createdAt:
@@ -523,7 +612,7 @@ paths:
       - Bearer: []
       summary: Get all User Roles
       tags:
-      - UserRoles
+      - User Roles
     post:
       consumes:
       - application/json
@@ -547,7 +636,7 @@ paths:
       - Bearer: []
       summary: Create User Roles
       tags:
-      - UserRoles
+      - User Roles
   /api/user-role/{id}:
     get:
       consumes:
@@ -577,7 +666,7 @@ paths:
       - Bearer: []
       summary: Get user role by ID
       tags:
-      - UserRoles
+      - User Roles
   /api/userroles/{id}:
     delete:
       consumes:
@@ -612,7 +701,7 @@ paths:
       - Bearer: []
       summary: Delete user role by ID
       tags:
-      - UserRoles
+      - User Roles
   /api/users:
     get:
       consumes:
@@ -770,6 +859,546 @@ paths:
       summary: Update user by ID
       tags:
       - Users
+  /api/workflow/club:
+    get:
+      consumes:
+      - application/json
+      description: Get details of all club
+      operationId: get-all-Club
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Tbl_club'
+            type: array
+      security:
+      - Bearer: []
+      summary: Get all Club
+      tags:
+      - Club
+    post:
+      consumes:
+      - application/json
+      description: Create New Club
+      operationId: createClub
+      parameters:
+      - description: User credentials in JSON format
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.Tbl_club'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Tbl_club'
+      security:
+      - Bearer: []
+      summary: Create Club
+      tags:
+      - Club
+  /api/workflow/club/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a club by ID
+      operationId: delete-club-by-id
+      parameters:
+      - description: Club ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil Menghapus Data
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Club tidak ditemukan
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Gagal menghapus data Club
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - Bearer: []
+      summary: Delete club by ID
+      tags:
+      - Club
+    get:
+      consumes:
+      - application/json
+      description: Get a club by ID
+      operationId: get-club-by-id
+      parameters:
+      - description: Club ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Club tidak ditemukan
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - Bearer: []
+      summary: Get club by ID
+      tags:
+      - Club
+  /api/workflow/match:
+    get:
+      consumes:
+      - application/json
+      description: Get details of all match
+      operationId: get-all-Match
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Tbl_match'
+            type: array
+      security:
+      - Bearer: []
+      summary: Get all Match
+      tags:
+      - Match
+    post:
+      consumes:
+      - application/json
+      description: Create New Match
+      operationId: createMatch
+      parameters:
+      - description: User credentials in JSON format
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.Tbl_match'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Tbl_match'
+      security:
+      - Bearer: []
+      summary: Create Match
+      tags:
+      - Match
+  /api/workflow/match/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a match by ID
+      operationId: delete-match-by-id
+      parameters:
+      - description: Match ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil Menghapus Data
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Match tidak ditemukan
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Gagal menghapus data Match
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - Bearer: []
+      summary: Delete match by ID
+      tags:
+      - Match
+    get:
+      consumes:
+      - application/json
+      description: Get a match by ID
+      operationId: get-match-by-id
+      parameters:
+      - description: Match ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Match tidak ditemukan
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - Bearer: []
+      summary: Get match by ID
+      tags:
+      - Match
+  /api/workflow/player:
+    get:
+      consumes:
+      - application/json
+      description: Get details of all player
+      operationId: get-all-Player
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Tbl_player'
+            type: array
+      security:
+      - Bearer: []
+      summary: Get all Player
+      tags:
+      - Player
+    post:
+      consumes:
+      - application/json
+      description: Create New Player
+      operationId: createPlayer
+      parameters:
+      - description: User credentials in JSON format
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.Tbl_player'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Tbl_player'
+      security:
+      - Bearer: []
+      summary: Create Player
+      tags:
+      - Player
+  /api/workflow/player/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a player by ID
+      operationId: delete-player-by-id
+      parameters:
+      - description: Player ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil Menghapus Data
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Player tidak ditemukan
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Gagal menghapus data Player
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - Bearer: []
+      summary: Delete player by ID
+      tags:
+      - Player
+    get:
+      consumes:
+      - application/json
+      description: Get a player by ID
+      operationId: get-player-by-id
+      parameters:
+      - description: Player ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Player tidak ditemukan
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - Bearer: []
+      summary: Get player by ID
+      tags:
+      - Player
+  /api/workflow/score:
+    get:
+      consumes:
+      - application/json
+      description: Get details of all score
+      operationId: get-all-Score
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Tbl_score'
+            type: array
+      security:
+      - Bearer: []
+      summary: Get all Score
+      tags:
+      - Score
+    post:
+      consumes:
+      - application/json
+      description: Create New Score
+      operationId: createScore
+      parameters:
+      - description: User credentials in JSON format
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.Tbl_score'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Tbl_score'
+      security:
+      - Bearer: []
+      summary: Create Score
+      tags:
+      - Score
+  /api/workflow/score/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a score by ID
+      operationId: delete-score-by-id
+      parameters:
+      - description: Score ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil Menghapus Data
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Score tidak ditemukan
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Gagal menghapus data Score
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - Bearer: []
+      summary: Delete score by ID
+      tags:
+      - Score
+    get:
+      consumes:
+      - application/json
+      description: Get a score by ID
+      operationId: get-score-by-id
+      parameters:
+      - description: Score ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Score tidak ditemukan
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - Bearer: []
+      summary: Get score by ID
+      tags:
+      - Score
+  /api/workflow/turnament:
+    get:
+      consumes:
+      - application/json
+      description: Get details of all turnament
+      operationId: get-all-Turnament
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Turnament'
+            type: array
+      security:
+      - Bearer: []
+      summary: Get all Turnament
+      tags:
+      - Turnament
+    post:
+      consumes:
+      - application/json
+      description: Create New Turnament
+      operationId: createTurnament
+      parameters:
+      - description: User credentials in JSON format
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.Turnament'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Turnament'
+      security:
+      - Bearer: []
+      summary: Create Turnament
+      tags:
+      - Turnament
+  /api/workflow/turnament/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a turnament by ID
+      operationId: delete-turnament-by-id
+      parameters:
+      - description: Turnament ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil Menghapus Data
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Turnament tidak ditemukan
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Gagal menghapus data Turnament
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - Bearer: []
+      summary: Delete turnament by ID
+      tags:
+      - Turnament
+    get:
+      consumes:
+      - application/json
+      description: Get a turnament by ID
+      operationId: get-turnament-by-id
+      parameters:
+      - description: Turnament ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Turnament tidak ditemukan
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - Bearer: []
+      summary: Get turnament by ID
+      tags:
+      - Turnament
 securityDefinitions:
   Bearer:
     in: header

@@ -254,7 +254,7 @@ func LoginUser(c *fiber.Ctx) error {
 	}
 
 	// Save the session after the token is successfully generated
-	//err = saveSession(c, int(user.ID), token)
+	err = saveSession(c, int(user.ID), token)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  http.StatusText(http.StatusInternalServerError),

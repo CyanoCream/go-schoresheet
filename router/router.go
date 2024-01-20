@@ -6,6 +6,7 @@ import (
 	_ "go-scoresheet/docs"
 	"go-scoresheet/master/controllers"
 	"go-scoresheet/master/router"
+	routerWorkflow "go-scoresheet/workflow/router"
 )
 
 // @title GO-Scoresheet
@@ -48,4 +49,6 @@ func SetupRoutes(app *fiber.App) {
 	api.Post("/login", controllers.LoginUser)
 	api.Delete("/logout", controllers.DeleteSessionByToken)
 	routerMaster.InitializeRoutesMaster(api)
+	routerWorkflow.InitializeRoutesWorkflow(api)
+
 }

@@ -3,8 +3,7 @@ package database
 import (
 	"fmt"
 	"github.com/joho/godotenv"
-	"go-scoresheet/master/models"
-	"go-scoresheet/middleware"
+	"go-scoresheet/migration"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
@@ -35,8 +34,8 @@ func StartDB() {
 	if err != nil {
 		panic(err)
 	}
-
-	db.Debug().AutoMigrate(&models.User{}, &models.UserRole{}, &models.Role{}, &models.PermissionRole{}, &models.Permission{}, &middleware.Session{})
+	migration.AutoMigrate(db)
+	//db.Debug().AutoMigrate(&models.User{}, &models.UserRole{}, &models.Role{}, &models.PermissionRole{}, &models.Permission{}, &middleware.Session{})
 }
 
 func GetDB() *gorm.DB {
