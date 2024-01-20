@@ -18,8 +18,7 @@ type permissionRepository struct {
 	db *gorm.DB
 }
 
-func NewPermissionRepository() PermissionRepository {
-	var db *gorm.DB
+func NewPermissionRepository(db *gorm.DB) PermissionRepository {
 	return &permissionRepository{
 		db: db,
 	}

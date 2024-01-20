@@ -6,12 +6,15 @@ import (
 	MasterRepository "go-scoresheet/master/repository"
 	MasterService "go-scoresheet/master/service"
 	"go-scoresheet/middleware"
+	"gorm.io/gorm"
 )
+
+var db *gorm.DB
 
 func InitializeRoutesMaster(api fiber.Router) {
 	UserController := controllers.NewUserController(
 		MasterService.NewUserService(
-			MasterRepository.NewUserRepository(),
+			MasterRepository.NewUserRepository(db),
 		),
 	)
 	api.Post("/users", UserController.CreateUser)
@@ -27,7 +30,7 @@ func InitializeRoutesMaster(api fiber.Router) {
 	//Master Permission
 	PermissionController := controllers.NewPermissionController(
 		MasterService.NewPermissionService(
-			MasterRepository.NewPermissionRepository(),
+			MasterRepository.NewPermissionRepository(db),
 		),
 	)
 	api.Post("/permission", PermissionController.CreatePermission)
@@ -39,7 +42,7 @@ func InitializeRoutesMaster(api fiber.Router) {
 	//Master Role
 	RoleController := controllers.NewRoleController(
 		MasterService.NewRoleService(
-			MasterRepository.NewRoleRepository(),
+			MasterRepository.NewRoleRepository(db),
 		),
 	)
 	api.Post("/role", RoleController.CreateRole)
@@ -51,7 +54,7 @@ func InitializeRoutesMaster(api fiber.Router) {
 	//Master User Role
 	userRoleController := controllers.NewUserRoleController(
 		MasterService.NewUserRoleService(
-			MasterRepository.NewUserRoleRepository(),
+			MasterRepository.NewUserRoleRepository(db),
 		),
 	)
 	api.Post("/user-role", userRoleController.CreateUserRole)
@@ -63,7 +66,7 @@ func InitializeRoutesMaster(api fiber.Router) {
 	//Master Permission Role
 	PermissionRoleController := controllers.NewPermissionRoleController(
 		MasterService.NewPermissionRoleService(
-			MasterRepository.NewPermissionRoleRepository(),
+			MasterRepository.NewPermissionRoleRepository(db),
 		),
 	)
 	api.Post("/permission-role", PermissionRoleController.CreatePermissionRole)
