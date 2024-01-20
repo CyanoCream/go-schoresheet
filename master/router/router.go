@@ -9,9 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var db *gorm.DB
-
-func InitializeRoutesMaster(api fiber.Router) {
+func InitializeRoutesMaster(api fiber.Router, db *gorm.DB) {
 	UserController := controllers.NewUserController(
 		MasterService.NewUserService(
 			MasterRepository.NewUserRepository(db),

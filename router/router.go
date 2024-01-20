@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/swagger"
+	"go-scoresheet/database"
 	_ "go-scoresheet/docs"
 	"go-scoresheet/master/controllers"
 	routerMaster "go-scoresheet/master/router"
@@ -48,7 +49,7 @@ func SetupRoutes(app *fiber.App) {
 	api := app.Group("/api")
 	api.Post("/login", controllers.LoginUser)
 	api.Delete("/logout", controllers.DeleteSessionByToken)
-	routerMaster.InitializeRoutesMaster(api)
-	routerWorkflow.InitializeRoutesWorkflow(api)
+	routerMaster.InitializeRoutesMaster(api, database.GetDB())
+	routerWorkflow.InitializeRoutesWorkflow(api, database.GetDB())
 
 }

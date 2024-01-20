@@ -9,9 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var db *gorm.DB
-
-func InitializeRoutesWorkflow(api fiber.Router) {
+func InitializeRoutesWorkflow(api fiber.Router, db *gorm.DB) {
 	workflowGroup := api.Group("/workflow")
 	workflowGroup.Use(middleware.Authentication) // Middleware yang spesifik untuk /workflow
 
