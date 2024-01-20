@@ -2,9 +2,20 @@ package controllers
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"go-scoresheet/database"
 	"go-scoresheet/master/models"
+	"go-scoresheet/master/service"
+	"strconv"
 )
+
+type RoleController struct {
+	roleService service.RoleService
+}
+
+func NewRoleController(roleService service.RoleService) *RoleController {
+	return &RoleController{
+		roleService: roleService,
+	}
+}
 
 // CreateRole godoc
 // @Tags Roles
@@ -17,32 +28,24 @@ import (
 // @Success 201 {object} models.Role
 // @Security Bearer
 // @Router /api/role [post]
-func CreateRole(c *fiber.Ctx) error {
-	Role := new(models.Role) // Pastikan ini adalah pointer ke struct yang benar
+func (c *RoleController) CreateRole(ctx *fiber.Ctx) error {
+	role := new(models.Role)
 
-	// Parse body ke struct Role
-	if err := c.BodyParser(Role); err != nil {
-		// Jika terjadi error, kirim response dengan status 400 dan pesan error
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	if err := ctx.BodyParser(role); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Invalid JSON: " + err.Error(),
 		})
 	}
 
-	// Lanjutkan dengan proses penyimpanan ke database
-	db := database.GetDB()
-	result := db.Create(Role)
-
-	// Jika terjadi error saat menyimpan, kirim response dengan status 500
-	if result.Error != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Failed to create role: " + result.Error.Error(),
+	if err := c.roleService.CreateRole(role); err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to create role: " + err.Error(),
 		})
 	}
 
-	// Jika berhasil, kirim response dengan status 201 dan data Role yang telah dibuat
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+	return ctx.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "success",
-		"data":    Role,
+		"data":    role,
 	})
 }
 
@@ -56,21 +59,17 @@ func CreateRole(c *fiber.Ctx) error {
 // @Success 200 {array} models.Role
 // @Security Bearer
 // @Router /api/role [get]
-func GetAllRoles(c *fiber.Ctx) error {
-	var Role []models.Role
-
-	db := database.GetDB()
-	result := db.Find(&Role)
-
-	if result.Error != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Failed to fetch permissions",
+func (c *RoleController) GetAllRoles(ctx *fiber.Ctx) error {
+	roles, err := c.roleService.GetAllRoles()
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to fetch roles",
 		})
 	}
 
-	return c.JSON(fiber.Map{
+	return ctx.JSON(fiber.Map{
 		"message": "success",
-		"data":    Role,
+		"data":    roles,
 	})
 }
 
@@ -85,22 +84,25 @@ func GetAllRoles(c *fiber.Ctx) error {
 // @Failure 404 {object} map[string]interface{} "Role tidak ditemukan"
 // @Security Bearer
 // @Router /api/role/{id} [get]
-func GetRoleById(c *fiber.Ctx) error {
-	db := database.GetDB()
-
-	RoleID := c.Params("id")
-
-	var Role models.Role
-	data := db.First(&Role, RoleID)
-
-	if data.Error != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"message": "Data Role tidak ditemukan",
+func (c *RoleController) GetRoleById(ctx *fiber.Ctx) error {
+	roleID := ctx.Params("id")
+	id, err := strconv.ParseUint(roleID, 10, 64)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid Role ID",
 		})
 	}
-	return c.JSON(fiber.Map{
+
+	role, err := c.roleService.GetRoleById(uint(id))
+	if err != nil {
+		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "Role not found",
+		})
+	}
+
+	return ctx.JSON(fiber.Map{
 		"message": "success",
-		"data":    Role,
+		"data":    role,
 	})
 }
 
@@ -115,41 +117,43 @@ func GetRoleById(c *fiber.Ctx) error {
 // @Failure 404 {object} map[string]interface{} "Role tidak ditemukan"
 // @Security Bearer
 // @Router /api/role/{id} [get]
-func UpdateRoleById(c *fiber.Ctx) error {
-	db := database.GetDB()
-
-	RoleID := c.Params("id")
-
-	var Role models.Role
-
-	if err := db.First(&Role, RoleID).Error; err != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"message": "Data Role tidak ditemukan",
+func (c *RoleController) UpdateRoleById(ctx *fiber.Ctx) error {
+	roleID := ctx.Params("id")
+	id, err := strconv.ParseUint(roleID, 10, 64)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid Role ID",
 		})
 	}
+
+	role, err := c.roleService.GetRoleById(uint(id))
+	if err != nil {
+		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "Role not found",
+		})
+	}
+
 	updatedRole := new(models.Role)
-	if err := c.BodyParser(updatedRole); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	if err := ctx.BodyParser(updatedRole); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Invalid JSON",
 		})
 	}
-	Role.Code = updatedRole.Code
-	Role.Name = updatedRole.Name
-	Role.Guard = updatedRole.Guard
-	Role.Tag = updatedRole.Tag
 
-	// Menggunakan metode Updates untuk menyimpan perubahan ke database
-	data := db.Model(&Role).Updates(&Role)
+	role.Code = updatedRole.Code
+	role.Name = updatedRole.Name
+	role.Guard = updatedRole.Guard
+	role.Tag = updatedRole.Tag
 
-	if data.Error != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Gagal melakukan pembaruan Permission",
+	if err := c.roleService.UpdateRole(role); err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to update Role",
 		})
 	}
 
-	return c.JSON(fiber.Map{
-		"message": "Berhasil melakukan pembaruan",
-		"data":    Role,
+	return ctx.JSON(fiber.Map{
+		"message": "Successfully updated Role",
+		"data":    role,
 	})
 }
 
@@ -165,25 +169,22 @@ func UpdateRoleById(c *fiber.Ctx) error {
 // @Failure 500 {object} map[string]interface{} "Gagal menghapus data role"
 // @Security Bearer
 // @Router /api/roles/{id} [delete]
-func DeleteRoleById(c *fiber.Ctx) error {
-	db := database.GetDB()
-
-	RoleID := c.Params("id")
-
-	var Role models.Role
-	data := db.First(&Role, RoleID)
-
-	if data.Error != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"message": "Data Role tidak ditemukan",
+func (c *RoleController) DeleteRoleById(ctx *fiber.Ctx) error {
+	roleID := ctx.Params("id")
+	id, err := strconv.ParseUint(roleID, 10, 64)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid Role ID",
 		})
 	}
-	if err := db.Delete(&Role).Error; err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Gagal menghapus data Role",
+
+	if err := c.roleService.DeleteRole(uint(id)); err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to delete Role",
 		})
 	}
-	return c.JSON(fiber.Map{
-		"message": "Berhasil Menghapus Data Role",
+
+	return ctx.JSON(fiber.Map{
+		"message": "Successfully deleted Role",
 	})
 }

@@ -4,45 +4,75 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"go-scoresheet/middleware"
 	controllers "go-scoresheet/workflow/controller"
+	WorkflowRepository "go-scoresheet/workflow/repository"
+	WorkflowService "go-scoresheet/workflow/service"
+	"gorm.io/gorm"
 )
+
+var db *gorm.DB
 
 func InitializeRoutesWorkflow(api fiber.Router) {
 	workflowGroup := api.Group("/workflow")
 	workflowGroup.Use(middleware.Authentication) // Middleware yang spesifik untuk /workflow
 
 	// Endpoint-endpoint untuk /turnament
-	workflowGroup.Post("/turnament", controllers.CreateTurnament)
-	workflowGroup.Get("/turnament", controllers.GetAllTurnaments)
-	workflowGroup.Get("/turnament/:id", controllers.GetTurnamentById)
-	workflowGroup.Post("/turnament/:id", controllers.UpdateTurnamentById)
-	workflowGroup.Delete("/turnament/:id", controllers.DeleteTurnamentById)
+	turnamentController := controllers.NewTurnamentController(
+		WorkflowService.NewTurnamentService(
+			WorkflowRepository.NewTurnamentRepository(db),
+		),
+	)
+	workflowGroup.Post("/turnament", turnamentController.CreateTurnament)
+	workflowGroup.Get("/turnament", turnamentController.GetAllTurnaments)
+	workflowGroup.Get("/turnament/:id", turnamentController.GetTurnamentById)
+	workflowGroup.Post("/turnament/:id", turnamentController.UpdateTurnamentById)
+	workflowGroup.Delete("/turnament/:id", turnamentController.DeleteTurnamentById)
 
 	// Endpoint-endpoint untuk /score
-	workflowGroup.Post("/score", controllers.CreateScore)
-	workflowGroup.Get("/score", controllers.GetAllScores)
-	workflowGroup.Get("/score/:id", controllers.GetScoreById)
-	workflowGroup.Post("/score/:id", controllers.UpdateScoreById)
-	workflowGroup.Delete("/score/:id", controllers.DeleteScoreById)
+	scoreController := controllers.NewScoreController(
+		WorkflowService.NewScoreService(
+			WorkflowRepository.NewScoreRepository(db),
+		),
+	)
+	workflowGroup.Post("/score", scoreController.CreateScore)
+	workflowGroup.Get("/score", scoreController.GetAllScores)
+	workflowGroup.Get("/score/:id", scoreController.GetScoreById)
+	workflowGroup.Post("/score/:id", scoreController.UpdateScoreById)
+	workflowGroup.Delete("/score/:id", scoreController.DeleteScoreById)
 
 	// Endpoint-endpoint untuk /player
-	workflowGroup.Post("/player", controllers.CreatePlayer)
-	workflowGroup.Get("/player", controllers.GetAllPlayers)
-	workflowGroup.Get("/player/:id", controllers.GetPlayerById)
-	workflowGroup.Post("/player/:id", controllers.UpdatePlayerById)
-	workflowGroup.Delete("/player/:id", controllers.DeletePlayerById)
+	playerController := controllers.NewPlayerController(
+		WorkflowService.NewPlayerService(
+			WorkflowRepository.NewPlayerRepository(db),
+		),
+	)
+	workflowGroup.Post("/player", playerController.CreatePlayer)
+	workflowGroup.Get("/player", playerController.GetAllPlayers)
+	workflowGroup.Get("/player/:id", playerController.GetPlayerById)
+	workflowGroup.Post("/player/:id", playerController.UpdatePlayerById)
+	workflowGroup.Delete("/player/:id", playerController.DeletePlayerById)
 
 	// Endpoint-endpoint untuk /match
-	workflowGroup.Post("/match", controllers.CreateMatch)
-	workflowGroup.Get("/match", controllers.GetAllMatchs)
-	workflowGroup.Get("/match/:id", controllers.GetMatchById)
-	workflowGroup.Post("/match/:id", controllers.UpdateMatchById)
-	workflowGroup.Delete("/match/:id", controllers.DeleteMatchById)
+	matchController := controllers.NewMatchController(
+		WorkflowService.NewMatchService(
+			WorkflowRepository.NewMatchRepository(db),
+		),
+	)
+	workflowGroup.Post("/match", matchController.CreateMatch)
+	workflowGroup.Get("/match", matchController.GetAllMatches)
+	workflowGroup.Get("/match/:id", matchController.GetMatchById)
+	workflowGroup.Post("/match/:id", matchController.UpdateMatchById)
+	workflowGroup.Delete("/match/:id", matchController.DeleteMatchById)
 
 	// Endpoint-endpoint untuk /club
-	workflowGroup.Post("/club", controllers.CreateClub)
-	workflowGroup.Get("/club", controllers.GetAllClubs)
-	workflowGroup.Get("/club/:id", controllers.GetClubById)
-	workflowGroup.Post("/club/:id", controllers.UpdateClubById)
-	workflowGroup.Delete("/club/:id", controllers.DeleteClubById)
+	clubController := controllers.NewClubController(
+		WorkflowService.NewClubService(
+			WorkflowRepository.NewClubRepository(db),
+		),
+	)
+	workflowGroup.Post("/club", clubController.CreateClub)
+	workflowGroup.Get("/club", clubController.GetAllClubs)
+	workflowGroup.Get("/club/:id", clubController.GetClubById)
+	workflowGroup.Post("/club/:id", clubController.UpdateClubById)
+	workflowGroup.Delete("/club/:id", clubController.DeleteClubById)
 
 }

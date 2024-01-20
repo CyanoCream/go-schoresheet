@@ -5,7 +5,7 @@ import (
 	"github.com/gofiber/swagger"
 	_ "go-scoresheet/docs"
 	"go-scoresheet/master/controllers"
-	"go-scoresheet/master/router"
+	routerMaster "go-scoresheet/master/router"
 	routerWorkflow "go-scoresheet/workflow/router"
 )
 

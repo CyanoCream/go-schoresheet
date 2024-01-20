@@ -1732,44 +1732,6 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Create New Turnament",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Turnament"
-                ],
-                "summary": "Create Turnament",
-                "operationId": "createTurnament",
-                "parameters": [
-                    {
-                        "description": "User credentials in JSON format",
-                        "name": "requestBody",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.Turnament"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/models.Turnament"
-                        }
-                    }
-                }
             }
         },
         "/api/workflow/turnament/{id}": {

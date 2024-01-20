@@ -1311,30 +1311,6 @@ paths:
       summary: Get all Turnament
       tags:
       - Turnament
-    post:
-      consumes:
-      - application/json
-      description: Create New Turnament
-      operationId: createTurnament
-      parameters:
-      - description: User credentials in JSON format
-        in: body
-        name: requestBody
-        required: true
-        schema:
-          $ref: '#/definitions/models.Turnament'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/models.Turnament'
-      security:
-      - Bearer: []
-      summary: Create Turnament
-      tags:
-      - Turnament
   /api/workflow/turnament/{id}:
     delete:
       consumes:

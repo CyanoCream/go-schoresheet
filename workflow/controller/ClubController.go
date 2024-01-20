@@ -2,9 +2,20 @@ package controllers
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"go-scoresheet/database"
 	"go-scoresheet/workflow/models"
+	"go-scoresheet/workflow/service"
+	"strconv"
 )
+
+type ClubController struct {
+	clubService service.ClubService
+}
+
+func NewClubController(clubService service.ClubService) *ClubController {
+	return &ClubController{
+		clubService: clubService,
+	}
+}
 
 // CreateClub godoc
 // @Tags Club
@@ -17,30 +28,24 @@ import (
 // @Success 201 {object} models.Tbl_club
 // @Security Bearer
 // @Router /api/workflow/club [post]
-func CreateClub(c *fiber.Ctx) error {
-	Club := new(models.Tbl_club) // Pastikan ini adalah pointer ke struct yang benar
+func (c *ClubController) CreateClub(ctx *fiber.Ctx) error {
+	club := new(models.Tbl_club)
 
-	if err := c.BodyParser(Club); err != nil {
-		// Jika terjadi error, kirim response dengan status 400 dan pesan error
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	if err := ctx.BodyParser(club); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Invalid JSON: " + err.Error(),
 		})
 	}
 
-	// Lanjutkan dengan proses penyimpanan ke database
-	db := database.GetDB()
-	result := db.Create(Club)
-
-	// Jika terjadi error saat menyimpan, kirim response dengan status 500
-	if result.Error != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Failed to create club: " + result.Error.Error(),
+	if err := c.clubService.CreateClub(club); err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to create club: " + err.Error(),
 		})
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+	return ctx.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "success",
-		"data":    Club,
+		"data":    club,
 	})
 }
 
@@ -54,21 +59,17 @@ func CreateClub(c *fiber.Ctx) error {
 // @Success 200 {array} models.Tbl_club
 // @Security Bearer
 // @Router /api/workflow/club [get]
-func GetAllClubs(c *fiber.Ctx) error {
-	var Club []models.Tbl_club
-
-	db := database.GetDB()
-	result := db.Find(&Club)
-
-	if result.Error != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Failed to fetch permissions",
+func (c *ClubController) GetAllClubs(ctx *fiber.Ctx) error {
+	clubs, err := c.clubService.GetAllClubs()
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to fetch clubs",
 		})
 	}
 
-	return c.JSON(fiber.Map{
+	return ctx.JSON(fiber.Map{
 		"message": "success",
-		"data":    Club,
+		"data":    clubs,
 	})
 }
 
@@ -83,22 +84,25 @@ func GetAllClubs(c *fiber.Ctx) error {
 // @Failure 404 {object} map[string]interface{} "Club tidak ditemukan"
 // @Security Bearer
 // @Router /api/workflow/club/{id} [get]
-func GetClubById(c *fiber.Ctx) error {
-	db := database.GetDB()
-
-	ClubID := c.Params("id")
-
-	var Club models.Tbl_club
-	data := db.First(&Club, ClubID)
-
-	if data.Error != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"message": "Data Turnament tidak ditemukan",
+func (c *ClubController) GetClubById(ctx *fiber.Ctx) error {
+	clubID := ctx.Params("id")
+	id, err := strconv.ParseUint(clubID, 10, 64)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid Club ID",
 		})
 	}
-	return c.JSON(fiber.Map{
+
+	club, err := c.clubService.GetClubById(uint(id))
+	if err != nil {
+		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "Club not found",
+		})
+	}
+
+	return ctx.JSON(fiber.Map{
 		"message": "success",
-		"data":    Club,
+		"data":    club,
 	})
 }
 
@@ -113,39 +117,41 @@ func GetClubById(c *fiber.Ctx) error {
 // @Failure 404 {object} map[string]interface{} "Club tidak ditemukan"
 // @Security Bearer
 // @Router /api/workflow/club/{id} [get]
-func UpdateClubById(c *fiber.Ctx) error {
-	db := database.GetDB()
-
-	ClubID := c.Params("id")
-
-	var Club models.Tbl_club
-
-	if err := db.First(&Club, ClubID).Error; err != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"message": "Data Club tidak ditemukan",
+func (c *ClubController) UpdateClubById(ctx *fiber.Ctx) error {
+	clubID := ctx.Params("id")
+	id, err := strconv.ParseUint(clubID, 10, 64)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid Club ID",
 		})
 	}
+
+	club, err := c.clubService.GetClubById(uint(id))
+	if err != nil {
+		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "Club not found",
+		})
+	}
+
 	updatedClub := new(models.Tbl_club)
-	if err := c.BodyParser(updatedClub); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	if err := ctx.BodyParser(updatedClub); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Invalid JSON",
 		})
 	}
-	Club.Name = updatedClub.Name
-	Club.Hometown = updatedClub.Hometown
 
-	// Menggunakan metode Updates untuk menyimpan perubahan ke database
-	data := db.Model(&Club).Updates(&Club)
+	club.Name = updatedClub.Name
+	club.Hometown = updatedClub.Hometown
 
-	if data.Error != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Gagal melakukan pembaruan Club",
+	if err := c.clubService.UpdateClub(club); err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to update Club",
 		})
 	}
 
-	return c.JSON(fiber.Map{
-		"message": "Berhasil melakukan pembaruan",
-		"data":    Club,
+	return ctx.JSON(fiber.Map{
+		"message": "Successfully updated Club",
+		"data":    club,
 	})
 }
 
@@ -161,25 +167,22 @@ func UpdateClubById(c *fiber.Ctx) error {
 // @Failure 500 {object} map[string]interface{} "Gagal menghapus data Club"
 // @Security Bearer
 // @Router /api/workflow/club/{id} [delete]
-func DeleteClubById(c *fiber.Ctx) error {
-	db := database.GetDB()
-
-	ClubID := c.Params("id")
-
-	var Club models.Tbl_club
-	data := db.First(&Club, ClubID)
-
-	if data.Error != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"message": "Data Club tidak ditemukan",
+func (c *ClubController) DeleteClubById(ctx *fiber.Ctx) error {
+	clubID := ctx.Params("id")
+	id, err := strconv.ParseUint(clubID, 10, 64)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid Club ID",
 		})
 	}
-	if err := db.Delete(&Club).Error; err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Gagal menghapus data Club",
+
+	if err := c.clubService.DeleteClub(uint(id)); err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to delete Club",
 		})
 	}
-	return c.JSON(fiber.Map{
-		"message": "Berhasil Menghapus Data Club",
+
+	return ctx.JSON(fiber.Map{
+		"message": "Successfully deleted Club",
 	})
 }

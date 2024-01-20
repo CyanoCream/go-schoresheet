@@ -16,6 +16,7 @@ import (
 func main() {
 	// Inisialisasi koneksi database
 	database.StartDB()
+	log.Println("Database initialized successfully")
 
 	// Inisialisasi rute-rute aplikasi dari package router
 	app := router.InitializeRoutesMain()

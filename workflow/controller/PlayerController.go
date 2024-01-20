@@ -2,9 +2,20 @@ package controllers
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"go-scoresheet/database"
 	"go-scoresheet/workflow/models"
+	"go-scoresheet/workflow/service"
+	"strconv"
 )
+
+type PlayerController struct {
+	playerService service.PlayerService
+}
+
+func NewPlayerController(playerService service.PlayerService) *PlayerController {
+	return &PlayerController{
+		playerService: playerService,
+	}
+}
 
 // CreatePlayer godoc
 // @Tags Player
@@ -17,30 +28,24 @@ import (
 // @Success 201 {object} models.Tbl_player
 // @Security Bearer
 // @Router /api/workflow/player [post]
-func CreatePlayer(c *fiber.Ctx) error {
-	Player := new(models.Tbl_player) // Pastikan ini adalah pointer ke struct yang benar
+func (c *PlayerController) CreatePlayer(ctx *fiber.Ctx) error {
+	player := new(models.Tbl_player)
 
-	if err := c.BodyParser(Player); err != nil {
-		// Jika terjadi error, kirim response dengan status 400 dan pesan error
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	if err := ctx.BodyParser(player); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Invalid JSON: " + err.Error(),
 		})
 	}
 
-	// Lanjutkan dengan proses penyimpanan ke database
-	db := database.GetDB()
-	result := db.Create(Player)
-
-	// Jika terjadi error saat menyimpan, kirim response dengan status 500
-	if result.Error != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Failed to create player: " + result.Error.Error(),
+	if err := c.playerService.CreatePlayer(player); err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to create player: " + err.Error(),
 		})
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+	return ctx.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "success",
-		"data":    Player,
+		"data":    player,
 	})
 }
 
@@ -54,21 +59,17 @@ func CreatePlayer(c *fiber.Ctx) error {
 // @Success 200 {array} models.Tbl_player
 // @Security Bearer
 // @Router /api/workflow/player [get]
-func GetAllPlayers(c *fiber.Ctx) error {
-	var Player []models.Tbl_player
-
-	db := database.GetDB()
-	result := db.Find(&Player)
-
-	if result.Error != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Failed to fetch permissions",
+func (c *PlayerController) GetAllPlayers(ctx *fiber.Ctx) error {
+	players, err := c.playerService.GetAllPlayers()
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to fetch players",
 		})
 	}
 
-	return c.JSON(fiber.Map{
+	return ctx.JSON(fiber.Map{
 		"message": "success",
-		"data":    Player,
+		"data":    players,
 	})
 }
 
@@ -83,22 +84,25 @@ func GetAllPlayers(c *fiber.Ctx) error {
 // @Failure 404 {object} map[string]interface{} "Player tidak ditemukan"
 // @Security Bearer
 // @Router /api/workflow/player/{id} [get]
-func GetPlayerById(c *fiber.Ctx) error {
-	db := database.GetDB()
-
-	PlayerID := c.Params("id")
-
-	var Player models.Tbl_player
-	data := db.First(&Player, PlayerID)
-
-	if data.Error != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"message": "Data Turnament tidak ditemukan",
+func (c *PlayerController) GetPlayerById(ctx *fiber.Ctx) error {
+	playerID := ctx.Params("id")
+	id, err := strconv.ParseUint(playerID, 10, 64)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid Player ID",
 		})
 	}
-	return c.JSON(fiber.Map{
+
+	player, err := c.playerService.GetPlayerById(uint(id))
+	if err != nil {
+		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "Player not found",
+		})
+	}
+
+	return ctx.JSON(fiber.Map{
 		"message": "success",
-		"data":    Player,
+		"data":    player,
 	})
 }
 
@@ -113,40 +117,42 @@ func GetPlayerById(c *fiber.Ctx) error {
 // @Failure 404 {object} map[string]interface{} "Player tidak ditemukan"
 // @Security Bearer
 // @Router /api/workflow/player/{id} [get]
-func UpdatePlayerById(c *fiber.Ctx) error {
-	db := database.GetDB()
-
-	PlayerID := c.Params("id")
-
-	var Player models.Tbl_player
-
-	if err := db.First(&Player, PlayerID).Error; err != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"message": "Data Player tidak ditemukan",
+func (c *PlayerController) UpdatePlayerById(ctx *fiber.Ctx) error {
+	playerID := ctx.Params("id")
+	id, err := strconv.ParseUint(playerID, 10, 64)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid Player ID",
 		})
 	}
+
+	player, err := c.playerService.GetPlayerById(uint(id))
+	if err != nil {
+		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "Player not found",
+		})
+	}
+
 	updatedPlayer := new(models.Tbl_player)
-	if err := c.BodyParser(updatedPlayer); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	if err := ctx.BodyParser(updatedPlayer); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Invalid JSON",
 		})
 	}
-	Player.Name = updatedPlayer.Name
-	Player.Club_id = updatedPlayer.Club_id
-	Player.Position = updatedPlayer.Position
 
-	// Menggunakan metode Updates untuk menyimpan perubahan ke database
-	data := db.Model(&Player).Updates(&Player)
+	player.Name = updatedPlayer.Name
+	player.Club_id = updatedPlayer.Club_id
+	player.Position = updatedPlayer.Position
 
-	if data.Error != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Gagal melakukan pembaruan Player",
+	if err := c.playerService.UpdatePlayer(player); err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to update Player",
 		})
 	}
 
-	return c.JSON(fiber.Map{
-		"message": "Berhasil melakukan pembaruan",
-		"data":    Player,
+	return ctx.JSON(fiber.Map{
+		"message": "Successfully updated Player",
+		"data":    player,
 	})
 }
 
@@ -162,25 +168,22 @@ func UpdatePlayerById(c *fiber.Ctx) error {
 // @Failure 500 {object} map[string]interface{} "Gagal menghapus data Player"
 // @Security Bearer
 // @Router /api/workflow/player/{id} [delete]
-func DeletePlayerById(c *fiber.Ctx) error {
-	db := database.GetDB()
-
-	PlayerID := c.Params("id")
-
-	var Player models.Tbl_player
-	data := db.First(&Player, PlayerID)
-
-	if data.Error != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"message": "Data Player tidak ditemukan",
+func (c *PlayerController) DeletePlayerById(ctx *fiber.Ctx) error {
+	playerID := ctx.Params("id")
+	id, err := strconv.ParseUint(playerID, 10, 64)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid Player ID",
 		})
 	}
-	if err := db.Delete(&Player).Error; err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Gagal menghapus data Player",
+
+	if err := c.playerService.DeletePlayer(uint(id)); err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to delete Player",
 		})
 	}
-	return c.JSON(fiber.Map{
-		"message": "Berhasil Menghapus Data Player",
+
+	return ctx.JSON(fiber.Map{
+		"message": "Successfully deleted Player",
 	})
 }

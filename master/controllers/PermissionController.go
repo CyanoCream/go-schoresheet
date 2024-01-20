@@ -2,9 +2,20 @@ package controllers
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"go-scoresheet/database"
 	"go-scoresheet/master/models"
+	"go-scoresheet/master/service"
+	"strconv"
 )
+
+type PermissionController struct {
+	permissionService service.PermissionService
+}
+
+func NewPermissionController(permissionService service.PermissionService) *PermissionController {
+	return &PermissionController{
+		permissionService: permissionService,
+	}
+}
 
 // CreatePermission godoc
 // @Tags Permissions
@@ -18,25 +29,22 @@ import (
 // @Security ApiKeyAuth
 // @Security Bearer
 // @Router /api/permission [post]
-func CreatePermission(c *fiber.Ctx) error {
+func (c *PermissionController) CreatePermission(ctx *fiber.Ctx) error {
 	permission := new(models.Permission)
 
-	if err := c.BodyParser(permission); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	if err := ctx.BodyParser(permission); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Invalid JSON",
 		})
 	}
 
-	db := database.GetDB()
-	result := db.Create(permission)
-
-	if result.Error != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+	if err := c.permissionService.CreatePermission(permission); err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": "Failed to create permission",
 		})
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(permission)
+	return ctx.Status(fiber.StatusCreated).JSON(permission)
 }
 
 // GetAllPermission godoc
@@ -50,19 +58,15 @@ func CreatePermission(c *fiber.Ctx) error {
 // @Security ApiKeyAuth
 // @Security Bearer
 // @Router /api/permission [get]
-func GetAllPermissions(c *fiber.Ctx) error {
-	var permissions []models.Permission
-
-	db := database.GetDB()
-	result := db.Find(&permissions)
-
-	if result.Error != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+func (c *PermissionController) GetAllPermissions(ctx *fiber.Ctx) error {
+	permissions, err := c.permissionService.GetAllPermissions()
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": "Failed to fetch permissions",
 		})
 	}
 
-	return c.JSON(fiber.Map{
+	return ctx.JSON(fiber.Map{
 		"message": "success",
 		"data":    permissions,
 	})
@@ -80,20 +84,23 @@ func GetAllPermissions(c *fiber.Ctx) error {
 // @Security ApiKeyAuth
 // @Security Bearer
 // @Router /api/permission/{id} [get]
-func GetPermissionById(c *fiber.Ctx) error {
-	db := database.GetDB()
-
-	permissionID := c.Params("id")
-
-	var permission models.Permission
-	data := db.First(&permission, permissionID)
-
-	if data.Error != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"message": "Data Permission tidak ditemukan",
+func (c *PermissionController) GetPermissionById(ctx *fiber.Ctx) error {
+	permissionID := ctx.Params("id")
+	id, err := strconv.ParseUint(permissionID, 10, 64)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid Permission ID",
 		})
 	}
-	return c.JSON(fiber.Map{
+
+	permission, err := c.permissionService.GetPermissionById(uint(id))
+	if err != nil {
+		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "Permission not found",
+		})
+	}
+
+	return ctx.JSON(fiber.Map{
 		"message": "success",
 		"data":    permission,
 	})
@@ -111,24 +118,29 @@ func GetPermissionById(c *fiber.Ctx) error {
 // @Security ApiKeyAuth
 // @Security Bearer
 // @Router /api/permission/{id} [post]
-func UpdatePermissionById(c *fiber.Ctx) error {
-	db := database.GetDB()
-
-	permissionID := c.Params("id")
-
-	var permission models.Permission
-
-	if err := db.First(&permission, permissionID).Error; err != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"message": "Data Permission tidak ditemukan",
+func (c *PermissionController) UpdatePermissionById(ctx *fiber.Ctx) error {
+	permissionID := ctx.Params("id")
+	id, err := strconv.ParseUint(permissionID, 10, 64)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid Permission ID",
 		})
 	}
+
+	permission, err := c.permissionService.GetPermissionById(uint(id))
+	if err != nil {
+		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "Permission not found",
+		})
+	}
+
 	updatedPermission := new(models.Permission)
-	if err := c.BodyParser(updatedPermission); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	if err := ctx.BodyParser(updatedPermission); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Invalid JSON",
 		})
 	}
+
 	permission.Code = updatedPermission.Code
 	permission.Name = updatedPermission.Name
 	permission.GuardName = updatedPermission.GuardName
@@ -138,17 +150,14 @@ func UpdatePermissionById(c *fiber.Ctx) error {
 	permission.Tag = updatedPermission.Tag
 	permission.IsActive = updatedPermission.IsActive
 
-	// Menggunakan metode Updates untuk menyimpan perubahan ke database
-	data := db.Model(&permission).Updates(&permission)
-
-	if data.Error != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Gagal melakukan pembaruan Permission",
+	if err := c.permissionService.UpdatePermission(permission); err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to update permission",
 		})
 	}
 
-	return c.JSON(fiber.Map{
-		"message": "Berhasil melakukan pembaruan",
+	return ctx.JSON(fiber.Map{
+		"message": "Successfully updated permission",
 		"data":    permission,
 	})
 }
@@ -165,25 +174,22 @@ func UpdatePermissionById(c *fiber.Ctx) error {
 // @Security ApiKeyAuth
 // @Security Bearer
 // @Router /api/permission/{id} [delete]
-func DeletePermissionById(c *fiber.Ctx) error {
-	db := database.GetDB()
-
-	permissionID := c.Params("id")
-
-	var permission models.Permission
-	data := db.First(&permission, permissionID)
-
-	if data.Error != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"message": "Data Permission tidak ditemukan",
+func (c *PermissionController) DeletePermissionById(ctx *fiber.Ctx) error {
+	permissionID := ctx.Params("id")
+	id, err := strconv.ParseUint(permissionID, 10, 64)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid Permission ID",
 		})
 	}
-	if err := db.Delete(&permission).Error; err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Gagal menghapus data permission",
+
+	if err := c.permissionService.DeletePermission(uint(id)); err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to delete permission",
 		})
 	}
-	return c.JSON(fiber.Map{
-		"message": "Berhasil Menghapus Data Permission",
+
+	return ctx.JSON(fiber.Map{
+		"message": "Successfully deleted permission",
 	})
 }

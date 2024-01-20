@@ -2,9 +2,20 @@ package controllers
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"go-scoresheet/database"
 	"go-scoresheet/workflow/models"
+	"go-scoresheet/workflow/service"
+	"strconv"
 )
+
+type MatchController struct {
+	matchService service.MatchService
+}
+
+func NewMatchController(matchService service.MatchService) *MatchController {
+	return &MatchController{
+		matchService: matchService,
+	}
+}
 
 // CreateMatch godoc
 // @Tags Match
@@ -17,30 +28,24 @@ import (
 // @Success 201 {object} models.Tbl_match
 // @Security Bearer
 // @Router /api/workflow/match [post]
-func CreateMatch(c *fiber.Ctx) error {
-	Match := new(models.Tbl_match) // Pastikan ini adalah pointer ke struct yang benar
+func (c *MatchController) CreateMatch(ctx *fiber.Ctx) error {
+	match := new(models.Tbl_match)
 
-	if err := c.BodyParser(Match); err != nil {
-		// Jika terjadi error, kirim response dengan status 400 dan pesan error
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	if err := ctx.BodyParser(match); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Invalid JSON: " + err.Error(),
 		})
 	}
 
-	// Lanjutkan dengan proses penyimpanan ke database
-	db := database.GetDB()
-	result := db.Create(Match)
-
-	// Jika terjadi error saat menyimpan, kirim response dengan status 500
-	if result.Error != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Failed to create match: " + result.Error.Error(),
+	if err := c.matchService.CreateMatch(match); err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to create match: " + err.Error(),
 		})
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+	return ctx.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "success",
-		"data":    Match,
+		"data":    match,
 	})
 }
 
@@ -54,21 +59,17 @@ func CreateMatch(c *fiber.Ctx) error {
 // @Success 200 {array} models.Tbl_match
 // @Security Bearer
 // @Router /api/workflow/match [get]
-func GetAllMatchs(c *fiber.Ctx) error {
-	var Match []models.Tbl_match
-
-	db := database.GetDB()
-	result := db.Find(&Match)
-
-	if result.Error != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Failed to fetch permissions",
+func (c *MatchController) GetAllMatches(ctx *fiber.Ctx) error {
+	matches, err := c.matchService.GetAllMatches()
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to fetch matches",
 		})
 	}
 
-	return c.JSON(fiber.Map{
+	return ctx.JSON(fiber.Map{
 		"message": "success",
-		"data":    Match,
+		"data":    matches,
 	})
 }
 
@@ -83,22 +84,25 @@ func GetAllMatchs(c *fiber.Ctx) error {
 // @Failure 404 {object} map[string]interface{} "Match tidak ditemukan"
 // @Security Bearer
 // @Router /api/workflow/match/{id} [get]
-func GetMatchById(c *fiber.Ctx) error {
-	db := database.GetDB()
-
-	MatchID := c.Params("id")
-
-	var Match models.Tbl_match
-	data := db.First(&Match, MatchID)
-
-	if data.Error != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"message": "Data Turnament tidak ditemukan",
+func (c *MatchController) GetMatchById(ctx *fiber.Ctx) error {
+	matchID := ctx.Params("id")
+	id, err := strconv.ParseUint(matchID, 10, 64)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid Match ID",
 		})
 	}
-	return c.JSON(fiber.Map{
+
+	match, err := c.matchService.GetMatchById(uint(id))
+	if err != nil {
+		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "Match not found",
+		})
+	}
+
+	return ctx.JSON(fiber.Map{
 		"message": "success",
-		"data":    Match,
+		"data":    match,
 	})
 }
 
@@ -113,42 +117,44 @@ func GetMatchById(c *fiber.Ctx) error {
 // @Failure 404 {object} map[string]interface{} "Match tidak ditemukan"
 // @Security Bearer
 // @Router /api/workflow/match/{id} [get]
-func UpdateMatchById(c *fiber.Ctx) error {
-	db := database.GetDB()
-
-	MatchID := c.Params("id")
-
-	var Match models.Tbl_match
-
-	if err := db.First(&Match, MatchID).Error; err != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"message": "Data Match tidak ditemukan",
+func (c *MatchController) UpdateMatchById(ctx *fiber.Ctx) error {
+	matchID := ctx.Params("id")
+	id, err := strconv.ParseUint(matchID, 10, 64)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid Match ID",
 		})
 	}
+
+	match, err := c.matchService.GetMatchById(uint(id))
+	if err != nil {
+		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "Match not found",
+		})
+	}
+
 	updatedMatch := new(models.Tbl_match)
-	if err := c.BodyParser(updatedMatch); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	if err := ctx.BodyParser(updatedMatch); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Invalid JSON",
 		})
 	}
-	Match.Club_id1 = updatedMatch.Club_id1
-	Match.Club_id2 = updatedMatch.Club_id2
-	Match.Date_match = updatedMatch.Date_match
-	Match.Level = updatedMatch.Level
-	Match.Turnament_code = updatedMatch.Turnament_code
 
-	// Menggunakan metode Updates untuk menyimpan perubahan ke database
-	data := db.Model(&Match).Updates(&Match)
+	match.Club_id1 = updatedMatch.Club_id1
+	match.Club_id2 = updatedMatch.Club_id2
+	match.Date_match = updatedMatch.Date_match
+	match.Level = updatedMatch.Level
+	match.Turnament_code = updatedMatch.Turnament_code
 
-	if data.Error != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Gagal melakukan pembaruan Match",
+	if err := c.matchService.UpdateMatch(match); err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to update Match",
 		})
 	}
 
-	return c.JSON(fiber.Map{
-		"message": "Berhasil melakukan pembaruan",
-		"data":    Match,
+	return ctx.JSON(fiber.Map{
+		"message": "Successfully updated Match",
+		"data":    match,
 	})
 }
 
@@ -164,25 +170,22 @@ func UpdateMatchById(c *fiber.Ctx) error {
 // @Failure 500 {object} map[string]interface{} "Gagal menghapus data Match"
 // @Security Bearer
 // @Router /api/workflow/match/{id} [delete]
-func DeleteMatchById(c *fiber.Ctx) error {
-	db := database.GetDB()
-
-	MatchID := c.Params("id")
-
-	var Match models.Tbl_match
-	data := db.First(&Match, MatchID)
-
-	if data.Error != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"message": "Data Match tidak ditemukan",
+func (c *MatchController) DeleteMatchById(ctx *fiber.Ctx) error {
+	matchID := ctx.Params("id")
+	id, err := strconv.ParseUint(matchID, 10, 64)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid Match ID",
 		})
 	}
-	if err := db.Delete(&Match).Error; err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Gagal menghapus data Match",
+
+	if err := c.matchService.DeleteMatch(uint(id)); err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to delete Match",
 		})
 	}
-	return c.JSON(fiber.Map{
-		"message": "Berhasil Menghapus Data Match",
+
+	return ctx.JSON(fiber.Map{
+		"message": "Successfully deleted Match",
 	})
 }
